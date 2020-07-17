@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">QRCode</string>
+    <string name="openlight">開燈</string>
+    <string name="closelight">關燈</string>
+</resources>
