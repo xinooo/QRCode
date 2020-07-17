@@ -222,18 +222,30 @@ public final class CameraManager {
       if (camera == null) {
         return null;
       }
-      int width = screenResolution.x * 3 / 4;
-      if (width < MIN_FRAME_WIDTH) {
-        width = MIN_FRAME_WIDTH;
-      } else if (width > MAX_FRAME_WIDTH) {
-        width = MAX_FRAME_WIDTH;
+      //扫描画面大小
+//      int width = screenResolution.x * 3 / 4;
+//      if (width < MIN_FRAME_WIDTH) {
+//        width = MIN_FRAME_WIDTH;
+//      } else if (width > MAX_FRAME_WIDTH) {
+//        width = MAX_FRAME_WIDTH;
+//      }
+//      int height = screenResolution.y * 3 / 4;
+//      if (height < MIN_FRAME_HEIGHT) {
+//        height = MIN_FRAME_HEIGHT;
+//      } else if (height > MAX_FRAME_HEIGHT) {
+//        height = MAX_FRAME_HEIGHT;
+//      }
+
+      //修改之后
+      int width = screenResolution.x * 7 / 10;
+      int height = screenResolution.y * 7 / 10;
+
+      if(height >= width) { //竖屏
+        height  = width;
+      } else { //横屏
+        width = height;
       }
-      int height = screenResolution.y * 3 / 4;
-      if (height < MIN_FRAME_HEIGHT) {
-        height = MIN_FRAME_HEIGHT;
-      } else if (height > MAX_FRAME_HEIGHT) {
-        height = MAX_FRAME_HEIGHT;
-      }
+
       int leftOffset = (screenResolution.x - width) / 2;
       int topOffset = (screenResolution.y - height) / 2;
       framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
@@ -251,11 +263,6 @@ public final class CameraManager {
       Rect rect = new Rect(getFramingRect());
       Point cameraResolution = configManager.getCameraResolution();
       Point screenResolution = configManager.getScreenResolution();
-      //modify here
-//      rect.left = rect.left * cameraResolution.x / screenResolution.x;
-//      rect.right = rect.right * cameraResolution.x / screenResolution.x;
-//      rect.top = rect.top * cameraResolution.y / screenResolution.y;
-//      rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
       rect.left = rect.left * cameraResolution.y / screenResolution.x;
       rect.right = rect.right * cameraResolution.y / screenResolution.x;
       rect.top = rect.top * cameraResolution.x / screenResolution.y;
