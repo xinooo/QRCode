@@ -15,6 +15,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import com.example.qrcode.GenerateQRcodeFragment;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
 import com.example.qrcode.zxing.decoding.InactivityTimer;
@@ -31,7 +37,7 @@ import java.util.Vector;
  * 
  * @author Ryan.Tang
  */
-public class CaptureActivity extends Activity implements Callback ,OnClickListener{
+public class CaptureActivity extends AppCompatActivity implements Callback ,OnClickListener{
 
 	private CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
@@ -42,6 +48,9 @@ public class CaptureActivity extends Activity implements Callback ,OnClickListen
 	private Button btn_light;
 	private boolean isOpen = true;
 	private ImageView back,add;
+	protected FragmentManager mFragmentManager = null;
+	protected FragmentTransaction mFragmentTransaction = null;
+	private GenerateQRcodeFragment generateQRcodeFragment;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -51,6 +60,7 @@ public class CaptureActivity extends Activity implements Callback ,OnClickListen
 		// ViewUtil.addTopView(getApplicationContext(), this,
 		// R.string.scan_card);
 		CameraManager.init(getApplication());
+		generateQRcodeFragment = GenerateQRcodeFragment.newInstance();
 		viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
 		btn_light = (Button) this.findViewById(R.id.btn_light);
 		back = (ImageView) findViewById(R.id.scanner_toolbar_back);
@@ -189,7 +199,21 @@ public class CaptureActivity extends Activity implements Callback ,OnClickListen
 				finish();
 				break;
 			case R.id.scanner_toolbar_add:
+				showFragment(generateQRcodeFragment);
 				break;
 		}
+	}
+
+	public void showFragment(Fragment fragment){
+		if (mFragmentManager == null) {
+			mFragmentManager = getSupportFragmentManager();
+		}
+		mFragmentTransaction = mFragmentManager.beginTransaction();
+		if (null == mFragmentManager.findFragmentByTag("generateQRcode")) {
+			mFragmentTransaction.add(R.id.contentFragment, fragment, "generateQRcode");
+		}
+		mFragmentTransaction.show(fragment);
+		mFragmentTransaction.addToBackStack(null);
+		mFragmentTransaction.commitAllowingStateLoss();
 	}
 }

@@ -21,8 +21,8 @@
         <activity
             android:name="com.example.qrcode.zxing.activity.CaptureActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="sensorPortrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:screenOrientation="fullSensor"
+            android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden"
             tools:ignore="WrongManifestParent" />
     </application>
