@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -15,12 +18,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
+import com.example.qrcode.getImageBitmap;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
 import com.example.qrcode.zxing.decoding.InactivityTimer;
@@ -199,7 +204,10 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 				finish();
 				break;
 			case R.id.scanner_toolbar_add:
-				showFragment(generateQRcodeFragment);
+//				showFragment(generateQRcodeFragment);
+				Intent i = new Intent(Intent.ACTION_PICK, null);
+				i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+				startActivityForResult(i, 0);
 				break;
 		}
 	}
@@ -215,5 +223,27 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		mFragmentTransaction.show(fragment);
 		mFragmentTransaction.addToBackStack(null);
 		mFragmentTransaction.commitAllowingStateLoss();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (resultCode == RESULT_OK) {
+			switch (requestCode) {
+				case 0://從相冊獲取圖片
+					try{
+						final Uri imageUri = data.getData();
+						Log.e("imageUri:",imageUri+"");
+						String selectPhoto = getImageBitmap.getRealPathFromUri(this,imageUri);
+						Log.e("selectPhoto:",selectPhoto);
+						Bitmap photobitmap = getImageBitmap.getBitmap(selectPhoto);
+					}catch (Exception e){
+						e.printStackTrace();
+					}
+					break;
+				default:
+					break;
+			}
+		}
 	}
 }
