@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private void showPermission() {
         // We don't have permission so prompt the user
         List<String> permissions = new ArrayList<String>();
-       permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         permissions.add(Manifest.permission.CAMERA);
         requestPermissions(permissions.toArray(new String[permissions.size()]), 0);
     }

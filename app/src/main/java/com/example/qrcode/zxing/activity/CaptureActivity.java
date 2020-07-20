@@ -57,7 +57,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	private String characterSet;
 	private InactivityTimer inactivityTimer;
 	private boolean isOpen = true;
-	private ImageView back,add,auto_focus;
+	private ImageView menu,flashlight, autofocus;
 	protected FragmentManager mFragmentManager = null;
 	protected FragmentTransaction mFragmentTransaction = null;
 	private GenerateQRcodeFragment generateQRcodeFragment;
@@ -76,19 +76,19 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		CameraManager.init(getApplication());
 		generateQRcodeFragment = GenerateQRcodeFragment.newInstance();
 		viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-		back = (ImageView) findViewById(R.id.scanner_toolbar_back);
-		add = (ImageView) findViewById(R.id.scanner_toolbar_add);
+		menu = (ImageView) findViewById(R.id.scanner_toolbar_menu);
+		flashlight = (ImageView) findViewById(R.id.scanner_toolbar_flashlight);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         surfaceView = (SurfaceView) findViewById(R.id.preview_view);
-        auto_focus = (ImageView) findViewById(R.id.auto_focus);
+        autofocus = (ImageView) findViewById(R.id.scanner_toolbar_autofocus);
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
 
-		back.setOnClickListener(this);
-		add.setOnClickListener(this);
+		menu.setOnClickListener(this);
+		flashlight.setOnClickListener(this);
         surfaceView.setOnClickListener(this);
-        auto_focus.setOnClickListener(this);
+        autofocus.setOnClickListener(this);
 		navigationView.setNavigationItemSelectedListener(this);
 
 		autoFocusCallback = new AutoFocusCallback();
@@ -197,10 +197,10 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
-			case R.id.scanner_toolbar_back:
+			case R.id.scanner_toolbar_menu:
 				drawerLayout.openDrawer(GravityCompat.START);
 				break;
-			case R.id.scanner_toolbar_add:
+			case R.id.scanner_toolbar_flashlight:
 				android.hardware.Camera camera = CameraManager.getCamera();
 				android.hardware.Camera.Parameters parameter = camera.getParameters();
 				// TODO FlashLight
@@ -225,13 +225,13 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
                     autoFocusCallback.setHandler(null, 0);
                 }
                 break;
-            case R.id.auto_focus:
+            case R.id.scanner_toolbar_autofocus:
                 if(handler.isFocus){
-                    auto_focus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_off_focused));
+                    autofocus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_off_focused));
                     autoFocusCallback.setHandler(null, 0);
                     handler.isFocus = false;
                 }else {
-                    auto_focus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_on_focused));
+                    autofocus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_on_focused));
                     CameraManager.get().requestAutoFocus(handler, R.id.auto_focus);
                     handler.isFocus = true;
                 }
@@ -314,6 +314,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 				showFragment(generateQRcodeFragment);
 				return true;
 			case R.id.menu4:
+				drawerLayout.closeDrawer(GravityCompat.START);
 				return true;
 		}
 		return false;
