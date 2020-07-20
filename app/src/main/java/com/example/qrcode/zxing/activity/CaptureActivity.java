@@ -1,6 +1,5 @@
 package com.example.qrcode.zxing.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,7 +24,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
-import com.example.qrcode.getImageBitmap;
+import com.example.qrcode.GetImageBitmap;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
 import com.example.qrcode.zxing.decoding.InactivityTimer;
@@ -204,10 +203,10 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 				finish();
 				break;
 			case R.id.scanner_toolbar_add:
-//				showFragment(generateQRcodeFragment);
-				Intent i = new Intent(Intent.ACTION_PICK, null);
-				i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-				startActivityForResult(i, 0);
+				showFragment(generateQRcodeFragment);
+//				Intent i = new Intent(Intent.ACTION_PICK, null);
+//				i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+//				startActivityForResult(i, 0);
 				break;
 		}
 	}
@@ -234,9 +233,9 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 					try{
 						final Uri imageUri = data.getData();
 						Log.e("imageUri:",imageUri+"");
-						String selectPhoto = getImageBitmap.getRealPathFromUri(this,imageUri);
+						String selectPhoto = GetImageBitmap.getRealPathFromUri(this,imageUri);
 						Log.e("selectPhoto:",selectPhoto);
-						Bitmap photobitmap = getImageBitmap.getBitmap(selectPhoto);
+						Bitmap photobitmap = GetImageBitmap.getBitmap(selectPhoto);
 					}catch (Exception e){
 						e.printStackTrace();
 					}

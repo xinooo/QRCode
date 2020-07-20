@@ -14,7 +14,7 @@ import java.io.FileInputStream;
 
 import androidx.loader.content.CursorLoader;
 
-public class getImageBitmap {
+public class GetImageBitmap {
     public static Bitmap getBitmap(String path) {
         Bitmap bitmap=null;
         try {

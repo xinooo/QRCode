@@ -6,23 +6,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 
 public class GenerateQRcodeFragment extends Fragment implements View.OnClickListener {
     public View mview;
     private Button btn;
+    private EditText name,organization,address,phone,email,detail;
     private ImageView qrcode;
+    private HashMap<String,String> information;
 
     public static GenerateQRcodeFragment newInstance() {
         GenerateQRcodeFragment fragment = new GenerateQRcodeFragment();
@@ -32,16 +37,36 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        information = new HashMap<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mview = inflater.inflate(R.layout.fragment, container, false);
-        btn = (Button)mview.findViewById(R.id.btn);
-        qrcode = (ImageView)mview.findViewById(R.id.qrcode);
+        findViewById();
         btn.setOnClickListener(this);
         return mview;
+    }
+
+    private void findViewById(){
+        btn = (Button)mview.findViewById(R.id.btn);
+        qrcode = (ImageView)mview.findViewById(R.id.qrcode);
+        name = (EditText)mview.findViewById(R.id.name);
+        organization = (EditText)mview.findViewById(R.id.organization);
+        address = (EditText)mview.findViewById(R.id.address);
+        phone = (EditText)mview.findViewById(R.id.phone);
+        email = (EditText)mview.findViewById(R.id.email);
+        detail = (EditText)mview.findViewById(R.id.detail);
+    }
+
+    private void setData(){
+        information.put("name",name.getText().toString());
+        information.put("organization",organization.getText().toString());
+        information.put("address",address.getText().toString());
+        information.put("phone",phone.getText().toString());
+        information.put("email",email.getText().toString());
+        information.put("detail",detail.getText().toString());
     }
 
     @Override
@@ -50,7 +75,9 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
             case R.id.btn:
 //                getFragmentManager().popBackStack(); //返回
                 try {
-                    qrcode.setImageBitmap(createQRCode("AAAAA\nBBBBB\nCCCCC",300));
+                    Gson gson = new Gson();
+                    setData();
+                    qrcode.setImageBitmap(createQRCode(gson.toJson(information),300));
                 } catch (WriterException e) {
                     e.printStackTrace();
                 }
