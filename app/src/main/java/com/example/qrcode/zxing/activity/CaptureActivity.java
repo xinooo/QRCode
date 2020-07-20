@@ -1,5 +1,6 @@
 package com.example.qrcode.zxing.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -8,28 +9,33 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
-import com.example.qrcode.GetImageBitmap;
+import com.example.qrcode.GetImageResult;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
 import com.example.qrcode.zxing.decoding.InactivityTimer;
 import com.example.qrcode.zxing.view.ViewfinderView;
 import com.example.qrcode.R;
+import com.google.android.material.navigation.NavigationView;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
@@ -41,7 +47,7 @@ import java.util.Vector;
  * 
  * @author Ryan.Tang
  */
-public class CaptureActivity extends AppCompatActivity implements Callback ,OnClickListener{
+public class CaptureActivity extends AppCompatActivity implements Callback ,OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
 	private CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
@@ -49,12 +55,13 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	private Vector<BarcodeFormat> decodeFormats;
 	private String characterSet;
 	private InactivityTimer inactivityTimer;
-	private Button btn_light;
 	private boolean isOpen = true;
 	private ImageView back,add;
 	protected FragmentManager mFragmentManager = null;
 	protected FragmentTransaction mFragmentTransaction = null;
 	private GenerateQRcodeFragment generateQRcodeFragment;
+	private DrawerLayout drawerLayout;
+	private NavigationView navigationView;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -66,14 +73,16 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		CameraManager.init(getApplication());
 		generateQRcodeFragment = GenerateQRcodeFragment.newInstance();
 		viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-		btn_light = (Button) this.findViewById(R.id.btn_light);
 		back = (ImageView) findViewById(R.id.scanner_toolbar_back);
 		add = (ImageView) findViewById(R.id.scanner_toolbar_add);
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+		navigationView = (NavigationView) findViewById(R.id.nav_view);
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
-		btn_light.setOnClickListener(this);
+
 		back.setOnClickListener(this);
 		add.setOnClickListener(this);
+		navigationView.setNavigationItemSelectedListener(this);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -179,7 +188,10 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
-			case R.id.btn_light:
+			case R.id.scanner_toolbar_back:
+				drawerLayout.openDrawer(GravityCompat.START);
+				break;
+			case R.id.scanner_toolbar_add:
 				android.hardware.Camera camera = CameraManager.getCamera();
 				android.hardware.Camera.Parameters parameter = camera.getParameters();
 				// TODO FlashLight
@@ -187,26 +199,15 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 					if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH))
 					{
 					}else {
-						btn_light.setText(getString(R.string.closelight));
 						parameter.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_TORCH);
 						camera.setParameters(parameter);
 						isOpen = false;
 					}
 				} else {
-					btn_light.setText(getString(R.string.openlight));
 					parameter.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_OFF);
 					camera.setParameters(parameter);
 					isOpen = true;
 				}
-				break;
-			case R.id.scanner_toolbar_back:
-				finish();
-				break;
-			case R.id.scanner_toolbar_add:
-				showFragment(generateQRcodeFragment);
-//				Intent i = new Intent(Intent.ACTION_PICK, null);
-//				i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-//				startActivityForResult(i, 0);
 				break;
 		}
 	}
@@ -229,13 +230,36 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == RESULT_OK) {
 			switch (requestCode) {
-				case 0://從相冊獲取圖片
+				case 0:
+					//從相冊獲取圖片
 					try{
 						final Uri imageUri = data.getData();
 						Log.e("imageUri:",imageUri+"");
-						String selectPhoto = GetImageBitmap.getRealPathFromUri(this,imageUri);
+						String selectPhoto = GetImageResult.getRealPathFromUri(this,imageUri);
 						Log.e("selectPhoto:",selectPhoto);
-						Bitmap photobitmap = GetImageBitmap.getBitmap(selectPhoto);
+						Bitmap photobitmap = GetImageResult.getBitmap(selectPhoto);
+						Result result = GetImageResult.scanningImage(photobitmap);
+						//对话框
+						AlertDialog dialog = new AlertDialog.Builder(this)
+								.setTitle("掃描結果：")//设置对话框的标题
+								.setMessage(result.getText())//设置对话框的内容
+								//设置对话框的按钮
+								.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										dialog.dismiss();
+										finish();
+									}
+								})
+								.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										dialog.dismiss();
+										finish();
+									}
+								}).create();
+						dialog.setCanceledOnTouchOutside(false);//点击其他地方对话框不消失
+						dialog.show();
 					}catch (Exception e){
 						e.printStackTrace();
 					}
@@ -244,5 +268,27 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 					break;
 			}
 		}
+	}
+
+	@Override
+	public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+		switch (item.getItemId()){
+			case R.id.menu1:
+				drawerLayout.closeDrawer(GravityCompat.START);
+				return true;
+			case R.id.menu2:
+				drawerLayout.closeDrawer(GravityCompat.START);
+				Intent i = new Intent(Intent.ACTION_PICK, null);
+				i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+				startActivityForResult(i, 0);
+				return true;
+			case R.id.menu3:
+				drawerLayout.closeDrawer(GravityCompat.START);
+				showFragment(generateQRcodeFragment);
+				return true;
+			case R.id.menu4:
+				return true;
+		}
+		return false;
 	}
 }

@@ -11,10 +11,19 @@ import android.provider.MediaStore;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Hashtable;
 
 import androidx.loader.content.CursorLoader;
 
-public class GetImageBitmap {
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Result;
+import com.google.zxing.common.HybridBinarizer;
+
+public class GetImageResult {
     public static Bitmap getBitmap(String path) {
         Bitmap bitmap=null;
         try {
@@ -95,5 +104,23 @@ public class GetImageBitmap {
         }
         cursor.close();
         return filePath;
+    }
+
+    public static Result scanningImage(Bitmap scanBitmap) {
+        Hashtable<DecodeHintType, String> hints = new Hashtable<>();
+        hints.put(DecodeHintType.CHARACTER_SET, "UTF8"); //设置二维码内容的编码
+        int width = scanBitmap.getWidth();
+        int height = scanBitmap.getHeight();
+        int[] pixels = new int[width * height];
+        scanBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+        RGBLuminanceSource rgbLuminanceSource = new RGBLuminanceSource(width, height, pixels);
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(rgbLuminanceSource));
+        MultiFormatReader multiFormatReader = new MultiFormatReader();
+        try {
+            return multiFormatReader.decode(binaryBitmap, hints);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

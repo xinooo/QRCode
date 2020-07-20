@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">QRCode</string>
-    <string name="openlight">開燈</string>
-    <string name="closelight">關燈</string>
+
     <string name="enter">確定</string>
     <string name="name">全名</string>
     <string name="organization">組織</string>
@@ -9,4 +8,9 @@
     <string name="phone">電話號碼</string>
     <string name="email">Email地址</string>
     <string name="detail">筆記</string>
+
+    <string name="menu1">掃描</string>
+    <string name="menu2">掃描影像</string>
+    <string name="menu3">創建二維碼</string>
+    <string name="menu4">設定</string>
 </resources>
