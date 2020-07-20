@@ -44,6 +44,7 @@ public final class CaptureActivityHandler extends Handler {
   private final CaptureActivity activity;
   private final DecodeThread decodeThread;
   private State state;
+  public boolean isFocus = true;
 
   private enum State {
     PREVIEW,
@@ -71,7 +72,7 @@ public final class CaptureActivityHandler extends Handler {
         //Log.d(TAG, "Got auto-focus message");
         // When one auto focus pass finishes, start another. This is the closest thing to
         // continuous AF. It does seem to hunt a bit, but I'm not sure what else to do.
-        if (state == State.PREVIEW) {
+        if (state == State.PREVIEW && isFocus) {
           CameraManager.get().requestAutoFocus(this, R.id.auto_focus);
         }
         break;

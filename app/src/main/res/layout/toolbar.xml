@@ -31,6 +31,14 @@
             android:textSize="16sp" />
 
         <ImageView
+            android:id="@+id/auto_focus"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/scanner_toolbar_add"
+            android:src="@mipmap/btn_check_on_focused" />
+
+        <ImageView
             android:id="@+id/scanner_toolbar_add"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"

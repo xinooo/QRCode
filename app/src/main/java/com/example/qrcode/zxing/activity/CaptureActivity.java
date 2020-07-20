@@ -30,6 +30,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
 import com.example.qrcode.GetImageResult;
+import com.example.qrcode.zxing.camera.AutoFocusCallback;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
 import com.example.qrcode.zxing.decoding.InactivityTimer;
@@ -56,12 +57,14 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	private String characterSet;
 	private InactivityTimer inactivityTimer;
 	private boolean isOpen = true;
-	private ImageView back,add;
+	private ImageView back,add,auto_focus;
 	protected FragmentManager mFragmentManager = null;
 	protected FragmentTransaction mFragmentTransaction = null;
 	private GenerateQRcodeFragment generateQRcodeFragment;
 	private DrawerLayout drawerLayout;
 	private NavigationView navigationView;
+	private AutoFocusCallback autoFocusCallback;
+	private SurfaceView surfaceView;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -77,12 +80,18 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		add = (ImageView) findViewById(R.id.scanner_toolbar_add);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
+        surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        auto_focus = (ImageView) findViewById(R.id.auto_focus);
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
 
 		back.setOnClickListener(this);
 		add.setOnClickListener(this);
+        surfaceView.setOnClickListener(this);
+        auto_focus.setOnClickListener(this);
 		navigationView.setNavigationItemSelectedListener(this);
+
+		autoFocusCallback = new AutoFocusCallback();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -209,6 +218,24 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 					isOpen = true;
 				}
 				break;
+            case R.id.preview_view:
+                //若沒自動對焦，點擊螢幕對焦
+                if(!handler.isFocus){
+                    CameraManager.get().requestAutoFocus(handler, R.id.auto_focus);
+                    autoFocusCallback.setHandler(null, 0);
+                }
+                break;
+            case R.id.auto_focus:
+                if(handler.isFocus){
+                    auto_focus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_off_focused));
+                    autoFocusCallback.setHandler(null, 0);
+                    handler.isFocus = false;
+                }else {
+                    auto_focus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_on_focused));
+                    CameraManager.get().requestAutoFocus(handler, R.id.auto_focus);
+                    handler.isFocus = true;
+                }
+                break;
 		}
 	}
 
