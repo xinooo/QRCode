@@ -13,6 +13,9 @@ import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Button button;
     private ClipboardManager myClipboard;
-    public static boolean isClipData = true;
+    public static boolean isClipData = true,sound = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +84,11 @@ public class MainActivity extends AppCompatActivity {
                         String text = data.getStringExtra("result");
                         myClip = ClipData.newPlainText("text", text);
                         myClipboard.setPrimaryClip(myClip);
+                    }
+                    if(sound){
+                        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                        Ringtone rt = RingtoneManager.getRingtone(this, uri);
+                        rt.play();
                     }
                     break;
             }

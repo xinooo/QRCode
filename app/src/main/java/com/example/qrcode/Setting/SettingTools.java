@@ -170,6 +170,7 @@ public class SettingTools {
         switch (id){
             case "播放提示音":
                 Log.e("AA",id+isChecked);
+                MainActivity.sound = isChecked;
                 break;
             case "复制到剪贴板":
                 Log.e("AA",id+isChecked);
