@@ -49,33 +49,7 @@ public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHold
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String s = holder.tv_id.getText().toString();
-                switch (s){
-                    case "播放提示音":
-                        Log.e("AA",s+isChecked);
-                        break;
-                    case "复制到剪贴板":
-                        Log.e("AA",s+isChecked);
-                        MainActivity.isClipData = isChecked;
-                        break;
-                    case "自动对焦":
-                        Log.e("AA",s+isChecked);
-                        CaptureActivity.handler.isFocus = isChecked;
-                        if(isChecked){
-                            CameraManager.get().requestAutoFocus(CaptureActivity.handler, R.id.auto_focus);
-                        }else {
-                            autoFocusCallback.setHandler(null, 0);
-                        }
-                        break;
-                    case "确定焦点":
-                        Log.e("AA",s+isChecked);
-                        break;
-                    case "自动打开网页":
-                        Log.e("AA",s+isChecked);
-                        break;
-                    case "反色":
-                        Log.e("AA",s+isChecked);
-                        break;
-                }
+                SettingTools.settingChange(s,isChecked);
                 data.setisCheck(isChecked);
                 SettingTools.saveJsonData(mData,CaptureActivity.mCachePath);
             }

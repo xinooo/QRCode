@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,6 +27,7 @@ public class SettingFragment extends Fragment {
     private String mCachePath;
     public View mview;
     private RecyclerView mrecyclerView;
+    private Button btn;
     private SettingAdapter adapter;
     private List<SettingBean> mData = new ArrayList<SettingBean>();
 
@@ -45,6 +47,7 @@ public class SettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         mview = inflater.inflate(R.layout.settingfragment, container, false);
         mrecyclerView = (RecyclerView)mview.findViewById(R.id.recyclerview);
+        btn = (Button)mview.findViewById(R.id.btn);
         String jsonData = SettingTools.readFile("setting.json",mCachePath);
         if (TextUtils.isEmpty(jsonData)) {
             jsonData = SettingTools.getAssetsData(getContext());
@@ -53,6 +56,12 @@ public class SettingFragment extends Fragment {
         mrecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SettingAdapter(mData);
         mrecyclerView.setAdapter(adapter);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack(); //返回
+            }
+        });
         return mview;
     }
 }

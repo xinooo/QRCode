@@ -3,6 +3,12 @@ package com.example.qrcode.Setting;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.qrcode.MainActivity;
+import com.example.qrcode.R;
+import com.example.qrcode.zxing.activity.CaptureActivity;
+import com.example.qrcode.zxing.camera.AutoFocusCallback;
+import com.example.qrcode.zxing.camera.CameraManager;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -157,5 +163,37 @@ public class SettingTools {
             }
         }
         writeFile("setting.json", jsonArray.toString(),mCachePath);
+    }
+
+    public static void settingChange(String id,boolean isChecked){
+        AutoFocusCallback autoFocusCallback  = new AutoFocusCallback();
+        switch (id){
+            case "播放提示音":
+                Log.e("AA",id+isChecked);
+                break;
+            case "复制到剪贴板":
+                Log.e("AA",id+isChecked);
+                MainActivity.isClipData = isChecked;
+                break;
+            case "自动对焦":
+                Log.e("AA",id+isChecked);
+                CaptureActivity.handler.isFocus = isChecked;
+                if(isChecked){
+                    CameraManager.get().requestAutoFocus(CaptureActivity.handler, R.id.auto_focus);
+                }else {
+                    autoFocusCallback.setHandler(null, 0);
+                }
+                break;
+            case "确定焦点":
+                Log.e("AA",id+isChecked);
+                break;
+            case "自动打开网页":
+                Log.e("AA",id+isChecked);
+                break;
+            case "反色":
+                Log.e("AA",id+isChecked);
+                break;
+        }
+
     }
 }

@@ -322,39 +322,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		for(int i =0;i<mData.size();i++){
 			SettingBean data = mData.get(i);
 			String s = data.getid();
-			switch (s){
-				case "播放提示音":
-					if(data.getisCheck()){
-
-					}
-					break;
-				case "复制到剪贴板":
-					MainActivity.isClipData = data.getisCheck();
-					break;
-				case "自动对焦":
-					handler.isFocus = data.getisCheck();
-					if(data.getisCheck()){
-						CameraManager.get().requestAutoFocus(handler, R.id.auto_focus);
-					}else {
-						autoFocusCallback.setHandler(null, 0);
-					}
-					break;
-				case "确定焦点":
-					if(data.getisCheck()){
-
-					}
-					break;
-				case "自动打开网页":
-					if(data.getisCheck()){
-
-					}
-					break;
-				case "反色":
-					if(data.getisCheck()){
-
-					}
-					break;
-			}
+			SettingTools.settingChange(s,data.getisCheck());
 		}
 	}
 }
