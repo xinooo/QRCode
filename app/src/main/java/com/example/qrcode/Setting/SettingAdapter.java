@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.qrcode.MainActivity;
 import com.example.qrcode.R;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 import com.example.qrcode.zxing.camera.AutoFocusCallback;
@@ -54,6 +55,7 @@ public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHold
                         break;
                     case "复制到剪贴板":
                         Log.e("AA",s+isChecked);
+                        MainActivity.isClipData = isChecked;
                         break;
                     case "自动对焦":
                         Log.e("AA",s+isChecked);

@@ -8,6 +8,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -25,6 +27,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Button button;
+    private ClipboardManager myClipboard;
+    public static boolean isClipData = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         button = (Button)findViewById(R.id.btn);
         ToastUtil.init(getApplicationContext());
         showPermission();
+        myClipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,6 +76,12 @@ public class MainActivity extends AppCompatActivity {
             switch (requestCode) {
                 case 1:
                     ToastUtil.showMessageOnCenter(data.getStringExtra("result"));
+                    if(isClipData){
+                        ClipData myClip;
+                        String text = data.getStringExtra("result");
+                        myClip = ClipData.newPlainText("text", text);
+                        myClipboard.setPrimaryClip(myClip);
+                    }
                     break;
             }
         }

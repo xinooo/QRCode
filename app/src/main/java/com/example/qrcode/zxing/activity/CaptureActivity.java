@@ -1,5 +1,7 @@
 package com.example.qrcode.zxing.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -31,9 +33,11 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
 import com.example.qrcode.GetImageResult;
+import com.example.qrcode.MainActivity;
 import com.example.qrcode.Setting.SettingBean;
 import com.example.qrcode.Setting.SettingFragment;
 import com.example.qrcode.Setting.SettingTools;
+import com.example.qrcode.ToastUtil;
 import com.example.qrcode.zxing.camera.AutoFocusCallback;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
@@ -74,6 +78,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	private SurfaceView surfaceView;
 	private List<SettingBean> mData = new ArrayList<SettingBean>();
 	public static String mCachePath;
+	private ClipboardManager myClipboard;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -99,6 +104,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		flashlight.setOnClickListener(this);
         surfaceView.setOnClickListener(this);
 		navigationView.setNavigationItemSelectedListener(this);
+		myClipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 
 		autoFocusCallback = new AutoFocusCallback();
 		String jsonData = SettingTools.readFile("setting.json",mCachePath);
@@ -270,27 +276,14 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 						Log.e("selectPhoto:",selectPhoto);
 						Bitmap photobitmap = GetImageResult.getBitmap(selectPhoto);
 						Result result = GetImageResult.scanningImage(photobitmap);
-						//对话框
-						AlertDialog dialog = new AlertDialog.Builder(this)
-								.setTitle("掃描結果：")//设置对话框的标题
-								.setMessage(result.getText())//设置对话框的内容
-								//设置对话框的按钮
-								.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog, int which) {
-										dialog.dismiss();
-										finish();
-									}
-								})
-								.setPositiveButton("確定", new DialogInterface.OnClickListener() {
-									@Override
-									public void onClick(DialogInterface dialog, int which) {
-										dialog.dismiss();
-										finish();
-									}
-								}).create();
-						dialog.setCanceledOnTouchOutside(false);//点击其他地方对话框不消失
-						dialog.show();
+						ToastUtil.showMessageOnCenter(result.getText());
+						//複製結果
+						if(MainActivity.isClipData){
+							ClipData myClip;
+							String text = result.getText();
+							myClip = ClipData.newPlainText("text", text);
+							myClipboard.setPrimaryClip(myClip);
+						}
 					}catch (Exception e){
 						e.printStackTrace();
 					}
@@ -336,9 +329,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 					}
 					break;
 				case "复制到剪贴板":
-					if(data.getisCheck()){
-
-					}
+					MainActivity.isClipData = data.getisCheck();
 					break;
 				case "自动对焦":
 					handler.isFocus = data.getisCheck();
