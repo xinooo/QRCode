@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -30,6 +31,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
 import com.example.qrcode.GetImageResult;
+import com.example.qrcode.Setting.SettingBean;
+import com.example.qrcode.Setting.SettingFragment;
+import com.example.qrcode.Setting.SettingTools;
 import com.example.qrcode.zxing.camera.AutoFocusCallback;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
@@ -41,6 +45,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -50,21 +56,24 @@ import java.util.Vector;
  */
 public class CaptureActivity extends AppCompatActivity implements Callback ,OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
-	private CaptureActivityHandler handler;
+	public static CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
 	private boolean hasSurface;
 	private Vector<BarcodeFormat> decodeFormats;
 	private String characterSet;
 	private InactivityTimer inactivityTimer;
 	private boolean isOpen = true;
-	private ImageView menu,flashlight, autofocus;
+	private ImageView menu,flashlight;
 	protected FragmentManager mFragmentManager = null;
 	protected FragmentTransaction mFragmentTransaction = null;
 	private GenerateQRcodeFragment generateQRcodeFragment;
+	private SettingFragment settingFragment;
 	private DrawerLayout drawerLayout;
 	private NavigationView navigationView;
 	private AutoFocusCallback autoFocusCallback;
 	private SurfaceView surfaceView;
+	private List<SettingBean> mData = new ArrayList<SettingBean>();
+	public static String mCachePath;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -74,24 +83,29 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		// ViewUtil.addTopView(getApplicationContext(), this,
 		// R.string.scan_card);
 		CameraManager.init(getApplication());
+		mCachePath = getFilesDir().getPath() + "/cache";
 		generateQRcodeFragment = GenerateQRcodeFragment.newInstance();
+		settingFragment = SettingFragment.newInstance();
 		viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
 		menu = (ImageView) findViewById(R.id.scanner_toolbar_menu);
 		flashlight = (ImageView) findViewById(R.id.scanner_toolbar_flashlight);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         surfaceView = (SurfaceView) findViewById(R.id.preview_view);
-        autofocus = (ImageView) findViewById(R.id.scanner_toolbar_autofocus);
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
 
 		menu.setOnClickListener(this);
 		flashlight.setOnClickListener(this);
         surfaceView.setOnClickListener(this);
-        autofocus.setOnClickListener(this);
 		navigationView.setNavigationItemSelectedListener(this);
 
 		autoFocusCallback = new AutoFocusCallback();
+		String jsonData = SettingTools.readFile("setting.json",mCachePath);
+		if (TextUtils.isEmpty(jsonData)) {
+			jsonData = SettingTools.getAssetsData(this);
+		}
+		mData = SettingTools.parseJson(jsonData);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -159,6 +173,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		if (handler == null) {
 			handler = new CaptureActivityHandler(this, decodeFormats, characterSet);
 		}
+		CameraSetting();
 	}
 
 	@Override
@@ -225,27 +240,16 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
                     autoFocusCallback.setHandler(null, 0);
                 }
                 break;
-            case R.id.scanner_toolbar_autofocus:
-                if(handler.isFocus){
-                    autofocus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_off_focused));
-                    autoFocusCallback.setHandler(null, 0);
-                    handler.isFocus = false;
-                }else {
-                    autofocus.setImageDrawable(getResources().getDrawable(R.mipmap.btn_check_on_focused));
-                    CameraManager.get().requestAutoFocus(handler, R.id.auto_focus);
-                    handler.isFocus = true;
-                }
-                break;
 		}
 	}
 
-	public void showFragment(Fragment fragment){
+	public void showFragment(Fragment fragment,String tag){
 		if (mFragmentManager == null) {
 			mFragmentManager = getSupportFragmentManager();
 		}
 		mFragmentTransaction = mFragmentManager.beginTransaction();
-		if (null == mFragmentManager.findFragmentByTag("generateQRcode")) {
-			mFragmentTransaction.add(R.id.contentFragment, fragment, "generateQRcode");
+		if (null == mFragmentManager.findFragmentByTag(tag)) {
+			mFragmentTransaction.add(R.id.contentFragment, fragment, tag);
 		}
 		mFragmentTransaction.show(fragment);
 		mFragmentTransaction.addToBackStack(null);
@@ -311,12 +315,55 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 				return true;
 			case R.id.menu3:
 				drawerLayout.closeDrawer(GravityCompat.START);
-				showFragment(generateQRcodeFragment);
+				showFragment(generateQRcodeFragment,"generateQRcode");
 				return true;
 			case R.id.menu4:
 				drawerLayout.closeDrawer(GravityCompat.START);
+				showFragment(settingFragment,"setting");
 				return true;
 		}
 		return false;
+	}
+
+	private void CameraSetting(){
+		for(int i =0;i<mData.size();i++){
+			SettingBean data = mData.get(i);
+			String s = data.getid();
+			switch (s){
+				case "播放提示音":
+					if(data.getisCheck()){
+
+					}
+					break;
+				case "复制到剪贴板":
+					if(data.getisCheck()){
+
+					}
+					break;
+				case "自动对焦":
+					handler.isFocus = data.getisCheck();
+					if(data.getisCheck()){
+						CameraManager.get().requestAutoFocus(handler, R.id.auto_focus);
+					}else {
+						autoFocusCallback.setHandler(null, 0);
+					}
+					break;
+				case "确定焦点":
+					if(data.getisCheck()){
+
+					}
+					break;
+				case "自动打开网页":
+					if(data.getisCheck()){
+
+					}
+					break;
+				case "反色":
+					if(data.getisCheck()){
+
+					}
+					break;
+			}
+		}
 	}
 }

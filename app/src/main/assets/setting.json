@@ -1,0 +1,32 @@
+[
+  {
+    "id": "播放提示音",
+    "note": "",
+    "isCheck": false
+  },
+  {
+    "id": "复制到剪贴板",
+    "note": "",
+    "isCheck": false
+  },
+  {
+    "id": "自动对焦",
+    "note": "",
+    "isCheck": true
+  },
+  {
+    "id": "确定焦点",
+    "note": "仅在打开自动对焦时可用",
+    "isCheck": true
+  },
+  {
+    "id": "自动打开网页",
+    "note": "",
+    "isCheck": true
+  },
+  {
+    "id": "反色",
+    "note": "扫描黑色背景上的白色条码，仅适用于部份设备",
+    "isCheck": false
+  }
+]
