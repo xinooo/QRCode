@@ -2,6 +2,7 @@ package com.example.qrcode.Setting;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
 import com.example.qrcode.MainActivity;
 import com.example.qrcode.R;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SettingTools {
+    public static boolean isClipData = false, sound = false, invert = false,openWeb = false;
     public static String getAssetsData(Context context) {
         InputStream mAssets = null;
         String result = "";
@@ -165,16 +167,27 @@ public class SettingTools {
         writeFile("setting.json", jsonArray.toString(),mCachePath);
     }
 
+    public static boolean isUrl(String value){
+        String[] start = {"http:","https:","file:"};
+        for (int i = 0; i < start.length; i++) {
+            if (value.startsWith(start[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public static void settingChange(String id,boolean isChecked){
         AutoFocusCallback autoFocusCallback  = new AutoFocusCallback();
         switch (id){
             case "播放提示音":
                 Log.e("AA",id+isChecked);
-                MainActivity.sound = isChecked;
+                sound = isChecked;
                 break;
             case "复制到剪贴板":
                 Log.e("AA",id+isChecked);
-                MainActivity.isClipData = isChecked;
+                isClipData = isChecked;
                 break;
             case "自动对焦":
                 Log.e("AA",id+isChecked);
@@ -190,9 +203,16 @@ public class SettingTools {
                 break;
             case "自动打开网页":
                 Log.e("AA",id+isChecked);
+                openWeb = isChecked;
                 break;
             case "反色":
                 Log.e("AA",id+isChecked);
+                invert = isChecked;
+                if(isChecked){
+                    CaptureActivity.invert.setVisibility(View.VISIBLE);
+                }else {
+                    CaptureActivity.invert.setVisibility(View.GONE);
+                }
                 break;
         }
 

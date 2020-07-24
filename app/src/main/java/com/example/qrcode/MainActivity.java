@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.qrcode.Setting.SettingTools;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 
 import java.util.ArrayList;
@@ -31,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Button button;
     private ClipboardManager myClipboard;
-    public static boolean isClipData = true,sound = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,17 +78,24 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case 1:
-                    ToastUtil.showMessageOnCenter(data.getStringExtra("result"));
-                    if(isClipData){
+                    String text = data.getStringExtra("result");
+                    ToastUtil.showMessageOnCenter(text);
+                    if(SettingTools.isClipData){
                         ClipData myClip;
-                        String text = data.getStringExtra("result");
                         myClip = ClipData.newPlainText("text", text);
                         myClipboard.setPrimaryClip(myClip);
                     }
-                    if(sound){
+                    if(SettingTools.sound){
                         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                         Ringtone rt = RingtoneManager.getRingtone(this, uri);
                         rt.play();
+                    }
+                    if(SettingTools.openWeb){
+                        if(SettingTools.isUrl(text)){
+                            ToastUtil.showMessageOnCenter("打開web");
+                        }else {
+                            ToastUtil.showMessageOnCenter("不開web");
+                        }
                     }
                     break;
             }

@@ -19,6 +19,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -79,6 +80,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	private List<SettingBean> mData = new ArrayList<SettingBean>();
 	public static String mCachePath;
 	private ClipboardManager myClipboard;
+	public static TextView invert;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -97,6 +99,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        invert = (TextView)findViewById(R.id.invert);
 		hasSurface = false;
 		inactivityTimer = new InactivityTimer(this);
 
@@ -220,6 +223,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		switch (v.getId()){
 			case R.id.scanner_toolbar_menu:
 				drawerLayout.openDrawer(GravityCompat.START);
+				navigationView.setCheckedItem(R.id.menu1);
 				break;
 			case R.id.scanner_toolbar_flashlight:
 				android.hardware.Camera camera = CameraManager.getCamera();
@@ -276,13 +280,20 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 						Log.e("selectPhoto:",selectPhoto);
 						Bitmap photobitmap = GetImageResult.getBitmap(selectPhoto);
 						Result result = GetImageResult.scanningImage(photobitmap);
-						ToastUtil.showMessageOnCenter(result.getText());
+						String text = result.getText();
+						ToastUtil.showMessageOnCenter(text);
 						//複製結果
-						if(MainActivity.isClipData){
+						if(SettingTools.isClipData){
 							ClipData myClip;
-							String text = result.getText();
 							myClip = ClipData.newPlainText("text", text);
 							myClipboard.setPrimaryClip(myClip);
+						}
+						if(SettingTools.openWeb){
+							if(SettingTools.isUrl(text)){
+								ToastUtil.showMessageOnCenter("打開web");
+							}else {
+								ToastUtil.showMessageOnCenter("不開web");
+							}
 						}
 					}catch (Exception e){
 						e.printStackTrace();

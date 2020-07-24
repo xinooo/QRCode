@@ -23,6 +23,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.example.qrcode.R;
+import com.example.qrcode.Setting.SettingTools;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.camera.PlanarYUVLuminanceSource;
@@ -84,7 +85,7 @@ final class DecodeHandler extends Handler {
     height = tmp;
     
     PlanarYUVLuminanceSource source = CameraManager.get().buildLuminanceSource(rotatedData, width, height);
-    BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+    BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(SettingTools.invert? source.invert() : source));
     try {
       rawResult = multiFormatReader.decodeWithState(bitmap);
     } catch (ReaderException re) {

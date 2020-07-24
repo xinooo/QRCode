@@ -25,6 +25,21 @@
             layout="@layout/toolbar"
             android:id="@+id/include" />
 
+        <TextView
+            android:id="@+id/invert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/include"
+            android:layout_marginTop="20dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:background="@drawable/btn_bg"
+            android:text="反色"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:visibility="gone"/>
+
         <FrameLayout
             android:id="@+id/contentFragment"
             android:layout_width="match_parent"
