@@ -81,6 +81,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	public static String mCachePath;
 	private ClipboardManager myClipboard;
 	public static TextView invert;
+	private boolean isFirst = true;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -167,8 +168,11 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 			bundle.putString("result", resultString);
 			resultIntent.putExtras(bundle);
 			this.setResult(RESULT_OK, resultIntent);
+			ToastUtil.showMessageOnCenter(resultString);
+			isFirst = false;
+			handler.restartPreviewAndDecode();
 		}
-		CaptureActivity.this.finish();
+//		CaptureActivity.this.finish();
 	}
 
 	private void initCamera(SurfaceHolder surfaceHolder) {
@@ -214,8 +218,9 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	}
 
 	public void drawViewfinder() {
-		viewfinderView.drawViewfinder();
-
+		if(isFirst){
+			viewfinderView.drawViewfinder();
+		}
 	}
 
 	@Override
