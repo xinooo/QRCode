@@ -61,6 +61,7 @@ import java.util.Vector;
  */
 public class CaptureActivity extends AppCompatActivity implements Callback ,OnClickListener, NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "CaptureActivity";
 	public static CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
 	private boolean hasSurface;
@@ -87,6 +88,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate");
 		setContentView(R.layout.capture);
 		// ViewUtil.addTopView(getApplicationContext(), this,
 		// R.string.scan_card);
@@ -121,6 +123,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	@SuppressWarnings("deprecation")
 	protected void onResume() {
 		super.onResume();
+        Log.d(TAG, "onResume" );
 		SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
 		SurfaceHolder surfaceHolder = surfaceView.getHolder();
 		if (hasSurface) {
@@ -136,6 +139,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	@Override
 	protected void onPause() {
 		super.onPause();
+        Log.d(TAG, "onPause" );
 		if (handler != null) {
 			handler.quitSynchronously();
 			handler = null;
@@ -145,6 +149,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 
 	@Override
 	protected void onDestroy() {
+        Log.d(TAG, "onDestroy" );
 		inactivityTimer.shutdown();
 		super.onDestroy();
 	}
@@ -178,12 +183,10 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	private void initCamera(SurfaceHolder surfaceHolder) {
 		try {
 			CameraManager.get().openDriver(surfaceHolder);
-		} catch (IOException ioe) {
-			return;
-		} catch (RuntimeException e) {
+		} catch (IOException | RuntimeException ioe) {
 			return;
 		}
-		if (handler == null) {
+        if (handler == null) {
 			handler = new CaptureActivityHandler(this, decodeFormats, characterSet);
 		}
 		CameraSetting();
@@ -196,6 +199,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceCreated" );
 		if (!hasSurface) {
 			hasSurface = true;
 			initCamera(holder);
@@ -205,6 +209,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceDestroyed" );
 		hasSurface = false;
 
 	}
@@ -285,7 +290,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 						Log.e("selectPhoto:",selectPhoto);
 						Bitmap photobitmap = GetImageResult.getBitmap(selectPhoto);
 						Result result = GetImageResult.scanningImage(photobitmap);
-						String text = result.getText();
+						final String text = result.getText();
 						ToastUtil.showMessageOnCenter(text);
 						//複製結果
 						if(SettingTools.isClipData){
@@ -295,9 +300,16 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 						}
 						if(SettingTools.openWeb){
 							if(SettingTools.isUrl(text)){
-								ToastUtil.showMessageOnCenter("打開web");
+                                Log.e(TAG, "onActivityResult: 打開web "+ text);
+                                new Handler().postDelayed(new Runnable(){
+                                    @Override
+                                    public void run() {
+                                        Uri uri = Uri.parse(text);
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                        startActivity(intent);
+                                    }}, 500);
 							}else {
-								ToastUtil.showMessageOnCenter("不開web");
+                                Log.e(TAG, "onActivityResult: 不開web "+ text);
 							}
 						}
 					}catch (Exception e){

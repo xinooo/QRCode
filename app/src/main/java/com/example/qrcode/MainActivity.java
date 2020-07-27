@@ -17,6 +17,7 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case 1:
-                    String text = data.getStringExtra("result");
+                    final String text = data.getStringExtra("result");
                     ToastUtil.showMessageOnCenter(text);
                     if(SettingTools.isClipData){
                         ClipData myClip;
@@ -92,9 +93,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                     if(SettingTools.openWeb){
                         if(SettingTools.isUrl(text)){
-                            ToastUtil.showMessageOnCenter("打開web");
+                            Log.e(TAG, "onActivityResult: 打開web "+ text);
+                            new Handler().postDelayed(new Runnable(){
+                                @Override
+                                public void run() {
+                                    Uri uri = Uri.parse(text);
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                    startActivity(intent);
+                                }}, 50);
                         }else {
-                            ToastUtil.showMessageOnCenter("不開web");
+                            Log.e(TAG, "onActivityResult: 不開web "+ text);
                         }
                     }
                     break;
