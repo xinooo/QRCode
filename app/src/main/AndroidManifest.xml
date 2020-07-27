@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="sensorPortrait"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,10 +26,10 @@
         <activity
             android:name="com.example.qrcode.zxing.activity.CaptureActivity"
             android:configChanges="orientation|keyboardHidden"
-            android:screenOrientation="fullSensor"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden"
-            tools:ignore="WrongManifestParent" />
+            android:screenOrientation="sensorPortrait"
+            tools:ignore="LockedOrientationActivity,WrongManifestParent" />
     </application>
 
 
