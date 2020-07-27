@@ -26,6 +26,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.example.qrcode.R;
+import com.example.qrcode.Setting.SettingTools;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.view.ViewfinderResultPointCallback;
@@ -44,7 +45,6 @@ public final class CaptureActivityHandler extends Handler {
   private final CaptureActivity activity;
   private final DecodeThread decodeThread;
   private State state;
-  public boolean isFocus = true;
 
   private enum State {
     PREVIEW,
@@ -72,7 +72,7 @@ public final class CaptureActivityHandler extends Handler {
         //Log.d(TAG, "Got auto-focus message");
         // When one auto focus pass finishes, start another. This is the closest thing to
         // continuous AF. It does seem to hunt a bit, but I'm not sure what else to do.
-        if (state == State.PREVIEW && isFocus) {
+        if (state == State.PREVIEW && SettingTools.isAutoFocus) {
           CameraManager.get().requestAutoFocus(this, R.id.auto_focus);
         }
         break;
@@ -87,9 +87,9 @@ public final class CaptureActivityHandler extends Handler {
         
         /***********************************************************************/
         Bitmap barcode = bundle == null ? null :
-            (Bitmap) bundle.getParcelable(DecodeThread.BARCODE_BITMAP);//嚙踝蕭謕蕭豲嚙踝蕭謕蕭謜嚙踐嚙踝蕭謕蕭豲嚙踝蕭謕蕭蹎蕭��
+            (Bitmap) bundle.getParcelable(DecodeThread.BARCODE_BITMAP);
         
-        activity.handleDecode((Result) message.obj, barcode);//嚙踝蕭謕蕭豲嚙踝蕭謕蕭��蕭豲嚙踝蕭謕
+        activity.handleDecode((Result) message.obj, barcode);
         /***********************************************************************/
         break;
       case R.id.decode_failed:

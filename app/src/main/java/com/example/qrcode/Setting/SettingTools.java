@@ -25,7 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SettingTools {
-    public static boolean isClipData = false, sound = false, invert = false,openWeb = false;
+    public static boolean isClipData = false;   //複製結果
+    public static boolean sound = false;        //開啟提示音
+    public static boolean invert = false;       //反色
+    public static boolean openWeb = false;      //開啟網頁
+    public static boolean isAutoFocus = false;   //自動對焦
     public static String getAssetsData(Context context) {
         InputStream mAssets = null;
         String result = "";
@@ -178,20 +182,20 @@ public class SettingTools {
     }
 
 
-    public static void settingChange(String id,boolean isChecked){
+    public static void settingChange(String id, boolean isChecked){
         AutoFocusCallback autoFocusCallback  = new AutoFocusCallback();
         switch (id){
             case "播放提示音":
-                Log.e("AA",id+isChecked);
+                Log.e("AA",id + isChecked);
                 sound = isChecked;
                 break;
             case "复制到剪贴板":
-                Log.e("AA",id+isChecked);
+                Log.e("AA",id + isChecked);
                 isClipData = isChecked;
                 break;
             case "自动对焦":
-                Log.e("AA",id+isChecked);
-                CaptureActivity.handler.isFocus = isChecked;
+                Log.e("AA",id + isChecked);
+                isAutoFocus = isChecked;
                 if(isChecked){
                     CameraManager.get().requestAutoFocus(CaptureActivity.handler, R.id.auto_focus);
                 }else {
@@ -199,14 +203,14 @@ public class SettingTools {
                 }
                 break;
             case "确定焦点":
-                Log.e("AA",id+isChecked);
+                Log.e("AA",id + isChecked);
                 break;
             case "自动打开网页":
-                Log.e("AA",id+isChecked);
+                Log.e("AA",id + isChecked);
                 openWeb = isChecked;
                 break;
             case "反色":
-                Log.e("AA",id+isChecked);
+                Log.e("AA",id + isChecked);
                 invert = isChecked;
                 if(isChecked){
                     CaptureActivity.invert.setVisibility(View.VISIBLE);

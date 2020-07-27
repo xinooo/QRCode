@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             switch (requestCode) {
                 case 1:
                     final String text = data.getStringExtra("result");
-                    ToastUtil.showMessageOnCenter(text);
+//                    ToastUtil.showMessageOnCenter(text);
                     if(SettingTools.isClipData){
                         ClipData myClip;
                         myClip = ClipData.newPlainText("text", text);

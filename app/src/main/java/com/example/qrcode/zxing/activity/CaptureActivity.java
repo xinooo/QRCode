@@ -34,7 +34,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
 import com.example.qrcode.GetImageResult;
-import com.example.qrcode.MainActivity;
 import com.example.qrcode.Setting.SettingBean;
 import com.example.qrcode.Setting.SettingFragment;
 import com.example.qrcode.Setting.SettingTools;
@@ -173,9 +172,8 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 			bundle.putString("result", resultString);
 			resultIntent.putExtras(bundle);
 			this.setResult(RESULT_OK, resultIntent);
-			ToastUtil.showMessageOnCenter(resultString);
-			isFirst = false;
-			handler.restartPreviewAndDecode();
+//			ToastUtil.showMessageOnCenter(resultString);
+			showDialog(resultString,barcode);
 		}
 //		CaptureActivity.this.finish();
 	}
@@ -255,8 +253,9 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 				break;
             case R.id.preview_view:
                 //若沒自動對焦，點擊螢幕對焦
-                if(!handler.isFocus){
+                if(!SettingTools.isAutoFocus){
                     CameraManager.get().requestAutoFocus(handler, R.id.auto_focus);
+                    //對焦後關閉自動對焦
                     autoFocusCallback.setHandler(null, 0);
                 }
                 break;
@@ -291,13 +290,15 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 						Bitmap photobitmap = GetImageResult.getBitmap(selectPhoto);
 						Result result = GetImageResult.scanningImage(photobitmap);
 						final String text = result.getText();
-						ToastUtil.showMessageOnCenter(text);
+//						ToastUtil.showMessageOnCenter(text);
+						showDialog(text,null);
 						//複製結果
 						if(SettingTools.isClipData){
 							ClipData myClip;
 							myClip = ClipData.newPlainText("text", text);
 							myClipboard.setPrimaryClip(myClip);
 						}
+						//自動開啟網頁
 						if(SettingTools.openWeb){
 							if(SettingTools.isUrl(text)){
                                 Log.e(TAG, "onActivityResult: 打開web "+ text);
@@ -352,5 +353,24 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 			String s = data.getid();
 			SettingTools.settingChange(s,data.getisCheck());
 		}
+	}
+
+	private void showDialog(String resultString, Bitmap barcode){
+		ImageView lookImage = new ImageView(this);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("掃描結果");
+		if(barcode != null){
+			lookImage.setImageBitmap(barcode);
+			builder.setView(lookImage);
+		}
+		builder.setMessage(resultString);
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface arg0, int arg1) {
+				isFirst = false;
+				CaptureActivity.handler.restartPreviewAndDecode();
+			}
+		});
+		builder.setCancelable(false);
+		builder.show();
 	}
 }
