@@ -188,7 +188,7 @@ public class SettingTools {
     }
     public static ClipboardManager myClipboard ;
     public static void todo(final Context context, final String result, boolean b){
-        myClipboard= (ClipboardManager)context.getSystemService(context.CLIPBOARD_SERVICE);
+        myClipboard= (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
         //複製結果
         if(SettingTools.isClipData){
             ClipData myClip;
