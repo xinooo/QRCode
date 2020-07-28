@@ -20,7 +20,7 @@ public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHold
 
     private List<SettingBean> mData;
     private OnOperationListener operationListener;
-    private boolean autofocus = false;
+    private boolean no_auto_focus = false;
 
     public SettingAdapter(List<SettingBean> Data){
         this.mData = Data;
@@ -56,13 +56,13 @@ public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHold
             }
         });
         if(position == 2 && !data.getisCheck()){
-            autofocus = true;
+            no_auto_focus = true;
         }
         //若自動對焦關閉，則確定焦點也關閉且無法選擇
-        if(position == 3 && autofocus){
+        if(position == 3 && no_auto_focus){
             holder.box.setEnabled(false);
             holder.box.setChecked(false);
-            autofocus = false;
+            no_auto_focus = false;
         }
     }
 
