@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.qrcode.R;
 import com.example.qrcode.zxing.activity.CaptureActivity;
-import com.example.qrcode.zxing.camera.AutoFocusCallback;
 
 import java.util.List;
 
