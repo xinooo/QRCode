@@ -37,7 +37,6 @@ import com.example.qrcode.GetImageResult;
 import com.example.qrcode.Setting.SettingBean;
 import com.example.qrcode.Setting.SettingFragment;
 import com.example.qrcode.Setting.SettingTools;
-import com.example.qrcode.ToastUtil;
 import com.example.qrcode.zxing.camera.AutoFocusCallback;
 import com.example.qrcode.zxing.camera.CameraManager;
 import com.example.qrcode.zxing.decoding.CaptureActivityHandler;
@@ -96,8 +95,8 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		generateQRcodeFragment = GenerateQRcodeFragment.newInstance();
 		settingFragment = SettingFragment.newInstance();
 		viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-		menu = (ImageView) findViewById(R.id.scanner_toolbar_menu);
-		flashlight = (ImageView) findViewById(R.id.scanner_toolbar_flashlight);
+		menu = (ImageView) findViewById(R.id.scanner_toolbar_leftbutton);
+		flashlight = (ImageView) findViewById(R.id.scanner_toolbar_rightbutton);
 		drawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         surfaceView = (SurfaceView) findViewById(R.id.preview_view);
@@ -229,11 +228,11 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()){
-			case R.id.scanner_toolbar_menu:
+			case R.id.scanner_toolbar_leftbutton:
 				drawerLayout.openDrawer(GravityCompat.START);
 				navigationView.setCheckedItem(R.id.menu1);
 				break;
-			case R.id.scanner_toolbar_flashlight:
+			case R.id.scanner_toolbar_rightbutton:
 				android.hardware.Camera camera = CameraManager.getCamera();
 				android.hardware.Camera.Parameters parameter = camera.getParameters();
 				// TODO FlashLight

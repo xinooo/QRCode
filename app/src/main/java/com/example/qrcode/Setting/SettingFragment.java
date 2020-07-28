@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -26,6 +29,11 @@ public class SettingFragment extends Fragment {
     private SettingAdapter adapter;
     private List<SettingBean> mData = new ArrayList<SettingBean>();
 
+    //Toolbar
+    private ImageView leftbutton,rightbutton;
+    private TextView title;
+    private LinearLayout toolbar;
+
     public static SettingFragment newInstance() {
         SettingFragment fragment = new SettingFragment();
         return fragment;
@@ -43,6 +51,17 @@ public class SettingFragment extends Fragment {
         mview = inflater.inflate(R.layout.settingfragment, container, false);
         mrecyclerView = (RecyclerView)mview.findViewById(R.id.recyclerview);
         btn = (Button)mview.findViewById(R.id.btn);
+        //Toolbar
+        title = (TextView)mview.findViewById(R.id.scanner_toolbar_title);
+        leftbutton = (ImageView) mview.findViewById(R.id.scanner_toolbar_leftbutton);
+        rightbutton = (ImageView) mview.findViewById(R.id.scanner_toolbar_rightbutton);
+        toolbar = (LinearLayout) mview.findViewById(R.id.include);
+        leftbutton.setImageDrawable(getActivity().getResources().getDrawable(R.mipmap.ic_menu_back));
+        rightbutton.setVisibility(View.GONE);
+        title.setText(getActivity().getResources().getString(R.string.menu4));
+        title.setTextColor(getActivity().getResources().getColor(R.color.white));
+        toolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
+
         String jsonData = SettingTools.readFile("setting.json",mCachePath);
         if (TextUtils.isEmpty(jsonData)) {
             jsonData = SettingTools.getAssetsData(getContext());
@@ -62,6 +81,12 @@ public class SettingFragment extends Fragment {
             }
         });
         btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack(); //返回
+            }
+        });
+        leftbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getFragmentManager().popBackStack(); //返回

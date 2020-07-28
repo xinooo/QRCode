@@ -15,6 +15,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -37,6 +39,11 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     private ImageView qrcode;
     private HashMap<String,String> information;
 
+    //Toolbar
+    private ImageView leftbutton,rightbutton;
+    private TextView title;
+    private LinearLayout toolbar;
+
     public static GenerateQRcodeFragment newInstance() {
         GenerateQRcodeFragment fragment = new GenerateQRcodeFragment();
         return fragment;
@@ -53,7 +60,17 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                              Bundle savedInstanceState) {
         mview = inflater.inflate(R.layout.fragment, container, false);
         findViewById();
+
+        //Toolbar
+        leftbutton.setImageDrawable(getActivity().getResources().getDrawable(R.mipmap.ic_menu_back));
+        rightbutton.setImageDrawable(getActivity().getResources().getDrawable(R.mipmap.ic_menu_share));
+        rightbutton.setVisibility(View.GONE);
+        title.setText(getActivity().getResources().getString(R.string.menu3));
+        title.setTextColor(getActivity().getResources().getColor(R.color.white));
+        toolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
+
         btn.setOnClickListener(this);
+        leftbutton.setOnClickListener(this);
         return mview;
     }
 
@@ -66,6 +83,12 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         phone = (EditText)mview.findViewById(R.id.phone);
         email = (EditText)mview.findViewById(R.id.email);
         detail = (EditText)mview.findViewById(R.id.detail);
+
+        //Toolbar
+        title = (TextView)mview.findViewById(R.id.scanner_toolbar_title);
+        leftbutton = (ImageView) mview.findViewById(R.id.scanner_toolbar_leftbutton);
+        rightbutton = (ImageView) mview.findViewById(R.id.scanner_toolbar_rightbutton);
+        toolbar = (LinearLayout)mview.findViewById(R.id.include);
     }
 
     private void setData(){
@@ -81,14 +104,17 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn:
-//                getFragmentManager().popBackStack(); //返回
                 try {
                     Gson gson = new Gson();
                     setData();
                     qrcode.setImageBitmap(createQRCode(gson.toJson(information),300,getContext()));
+                    rightbutton.setVisibility(View.VISIBLE);
                 } catch (WriterException e) {
                     e.printStackTrace();
                 }
+                break;
+            case R.id.scanner_toolbar_leftbutton:
+                getFragmentManager().popBackStack(); //返回
                 break;
         }
     }

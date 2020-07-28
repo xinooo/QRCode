@@ -7,6 +7,10 @@
     android:background="#FFFFFF"
     android:orientation="vertical">
 
+    <include
+        layout="@layout/toolbar"
+        android:id="@+id/include" />
+
     <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
