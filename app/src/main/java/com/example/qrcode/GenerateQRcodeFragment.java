@@ -65,7 +65,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         leftbutton.setImageDrawable(getActivity().getResources().getDrawable(R.mipmap.ic_menu_back));
         rightbutton.setImageDrawable(getActivity().getResources().getDrawable(R.mipmap.ic_menu_share));
         rightbutton.setVisibility(View.GONE);
-        title.setText(getActivity().getResources().getString(R.string.menu3));
+        title.setText(getString(R.string.menu3));
         title.setTextColor(getActivity().getResources().getColor(R.color.white));
         toolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
 
@@ -91,6 +91,15 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         toolbar = (LinearLayout)mview.findViewById(R.id.include);
     }
 
+    private void clearText(){
+        name.setText(null);
+        organization.setText(null);
+        address.setText(null);
+        phone.setText(null);
+        email.setText(null);
+        detail.setText(null);
+    }
+
     private void setData(){
         information.put("name",name.getText().toString());
         information.put("organization",organization.getText().toString());
@@ -109,11 +118,13 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                     setData();
                     qrcode.setImageBitmap(createQRCode(gson.toJson(information),300,getContext()));
                     rightbutton.setVisibility(View.VISIBLE);
+                    clearText();
                 } catch (WriterException e) {
                     e.printStackTrace();
                 }
                 break;
             case R.id.scanner_toolbar_leftbutton:
+                clearText();
                 getFragmentManager().popBackStack(); //返回
                 break;
         }

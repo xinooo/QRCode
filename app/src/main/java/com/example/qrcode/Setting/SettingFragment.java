@@ -58,7 +58,7 @@ public class SettingFragment extends Fragment {
         toolbar = (LinearLayout) mview.findViewById(R.id.include);
         leftbutton.setImageDrawable(getActivity().getResources().getDrawable(R.mipmap.ic_menu_back));
         rightbutton.setVisibility(View.GONE);
-        title.setText(getActivity().getResources().getString(R.string.menu4));
+        title.setText(getString(R.string.menu4));
         title.setTextColor(getActivity().getResources().getColor(R.color.white));
         toolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
 
