@@ -80,31 +80,7 @@ public class MainActivity extends AppCompatActivity {
             switch (requestCode) {
                 case 1:
                     final String text = data.getStringExtra("result");
-//                    ToastUtil.showMessageOnCenter(text);
-                    if(SettingTools.isClipData){
-                        ClipData myClip;
-                        myClip = ClipData.newPlainText("text", text);
-                        myClipboard.setPrimaryClip(myClip);
-                    }
-                    if(SettingTools.sound){
-                        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                        Ringtone rt = RingtoneManager.getRingtone(this, uri);
-                        rt.play();
-                    }
-                    if(SettingTools.openWeb){
-                        if(SettingTools.isUrl(text)){
-                            Log.e(TAG, "onActivityResult: 打開web "+ text);
-                            new Handler().postDelayed(new Runnable(){
-                                @Override
-                                public void run() {
-                                    Uri uri = Uri.parse(text);
-                                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                    startActivity(intent);
-                                }}, 50);
-                        }else {
-                            Log.e(TAG, "onActivityResult: 不開web "+ text);
-                        }
-                    }
+                    SettingTools.todo(this,text,true);
                     break;
             }
         }

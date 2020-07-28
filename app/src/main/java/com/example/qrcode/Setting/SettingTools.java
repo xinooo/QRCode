@@ -1,10 +1,16 @@
 package com.example.qrcode.Setting;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
-import com.example.qrcode.MainActivity;
 import com.example.qrcode.R;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 import com.example.qrcode.zxing.camera.AutoFocusCallback;
@@ -180,6 +186,37 @@ public class SettingTools {
         }
         return false;
     }
+    public static ClipboardManager myClipboard ;
+    public static void todo(final Context context, final String result, boolean b){
+        myClipboard= (ClipboardManager)context.getSystemService(context.CLIPBOARD_SERVICE);
+        //複製結果
+        if(SettingTools.isClipData){
+            ClipData myClip;
+            myClip = ClipData.newPlainText("text", result);
+            myClipboard.setPrimaryClip(myClip);
+        }
+        //提示音
+        if(SettingTools.sound && b){
+            Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone rt = RingtoneManager.getRingtone(context, uri);
+            rt.play();
+        }
+        //自動開啟網頁
+        if(SettingTools.openWeb){
+            if(SettingTools.isUrl(result)){
+                Log.e("openWeb", "onActivityResult: 打開web "+ result);
+                new Handler().postDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        Uri uri = Uri.parse(result);
+                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        context.startActivity(intent);
+                    }}, 50);
+            }else {
+                Log.e("openWeb", "onActivityResult: 不開web "+ result);
+            }
+        }
+    }
 
 
     public static void settingChange(String id, boolean isChecked){
@@ -219,6 +256,5 @@ public class SettingTools {
                 }
                 break;
         }
-
     }
 }

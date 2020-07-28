@@ -1,6 +1,5 @@
 package com.example.qrcode.zxing.activity;
 
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -173,6 +172,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 			this.setResult(RESULT_OK, resultIntent);
 //			ToastUtil.showMessageOnCenter(resultString);
 			showDialog(resultString,barcode);
+			SettingTools.todo(this,resultString,true);
 		}
 //		CaptureActivity.this.finish();
 	}
@@ -291,27 +291,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 						final String text = result.getText();
 //						ToastUtil.showMessageOnCenter(text);
 						showDialog(text,null);
-						//複製結果
-						if(SettingTools.isClipData){
-							ClipData myClip;
-							myClip = ClipData.newPlainText("text", text);
-							myClipboard.setPrimaryClip(myClip);
-						}
-						//自動開啟網頁
-						if(SettingTools.openWeb){
-							if(SettingTools.isUrl(text)){
-                                Log.e(TAG, "onActivityResult: 打開web "+ text);
-                                new Handler().postDelayed(new Runnable(){
-                                    @Override
-                                    public void run() {
-                                        Uri uri = Uri.parse(text);
-                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                        startActivity(intent);
-                                    }}, 500);
-							}else {
-                                Log.e(TAG, "onActivityResult: 不開web "+ text);
-							}
-						}
+						SettingTools.todo(this,text,false);
 					}catch (Exception e){
 						e.printStackTrace();
 					}
