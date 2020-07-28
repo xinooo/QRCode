@@ -1,6 +1,13 @@
 package com.example.qrcode;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +25,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -77,7 +85,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                 try {
                     Gson gson = new Gson();
                     setData();
-                    qrcode.setImageBitmap(createQRCode(gson.toJson(information),300));
+                    qrcode.setImageBitmap(createQRCode(gson.toJson(information),300,getContext()));
                 } catch (WriterException e) {
                     e.printStackTrace();
                 }
@@ -85,11 +93,12 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         }
     }
 
-    public static Bitmap createQRCode(String str,int widthAndHeight) throws WriterException {
+    private Bitmap createQRCode(String str, int widthAndHeight, Context context) throws WriterException {
         Hashtable hints = new Hashtable();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         BitMatrix matrix = new MultiFormatWriter().encode(str,
-                BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight);
+                BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight,hints);
         int width = matrix.getWidth();
         int height = matrix.getHeight();
         int[] pixels = new int[width * height];
@@ -104,6 +113,27 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         Bitmap bitmap = Bitmap.createBitmap(width, height,
                 Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        return bitmap;
+        Bitmap logo = BitmapFactory.decodeResource(context.getResources(), R.mipmap.face005, null);
+        return addLogo(bitmap,logo);
+    }
+
+    //合成bitmap
+    private Bitmap addLogo(Bitmap qrcode, Bitmap logo){
+        int bgWidth = qrcode.getWidth();
+        int bgHeigh = qrcode.getHeight();
+
+        logo = ThumbnailUtils.extractThumbnail(logo,bgWidth/5,bgHeigh/5,ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        Bitmap cvbitmap = Bitmap.createBitmap(bgWidth,bgHeigh, Bitmap.Config.ARGB_8888);
+        Paint paint = new Paint();
+        Canvas canvas = new Canvas(cvbitmap);
+        canvas.drawBitmap(qrcode,0,0,paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
+        canvas.drawBitmap(logo,(bgWidth-logo.getWidth())/2,(bgHeigh-logo.getHeight())/2,paint);
+        canvas.save();
+        canvas.restore();
+        if (cvbitmap.isRecycled()){
+            cvbitmap.recycle();
+        }
+        return cvbitmap;
     }
 }
