@@ -1,6 +1,5 @@
 package com.example.qrcode.Setting;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +11,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.qrcode.MainActivity;
 import com.example.qrcode.R;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 import com.example.qrcode.zxing.camera.AutoFocusCallback;
-import com.example.qrcode.zxing.camera.CameraManager;
 
 import java.util.List;
 
 public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHolder> {
 
     private List<SettingBean> mData;
-    private AutoFocusCallback autoFocusCallback  = new AutoFocusCallback();
+    private OnOperationListener operationListener;
+    private boolean autofocus = false;
 
     public SettingAdapter(List<SettingBean> Data){
         this.mData = Data;
@@ -37,24 +35,43 @@ public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final SettingBean data = mData.get(position);
         holder.tv_id.setText(data.getid());
         if(!data.getnote().equals("")){
             holder.tv_note.setVisibility(View.VISIBLE);
             holder.tv_note.setText(data.getnote());
         }
-        holder.box.setChecked(false);
+        holder.box.setChecked(data.getisCheck());
         holder.box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 String s = holder.tv_id.getText().toString();
                 SettingTools.settingChange(s,isChecked);
                 data.setisCheck(isChecked);
+                if(position == 2){
+                    //若自動對焦關閉，則確定焦點也關閉且無法選擇
+                    operationListener.setCheck(position,isChecked);
+                }
                 SettingTools.saveJsonData(mData,CaptureActivity.mCachePath);
             }
         });
-        holder.box.setChecked(data.getisCheck());
+        if(position == 2 && !data.getisCheck()){
+            autofocus = true;
+        }
+        //若自動對焦關閉，則確定焦點也關閉且無法選擇
+        if(position == 3 && autofocus){
+            holder.box.setEnabled(false);
+            holder.box.setChecked(false);
+            autofocus = false;
+        }
+    }
+
+    public void setOnOperationListener(OnOperationListener listener) {
+        this.operationListener = listener;
+    }
+    public interface OnOperationListener {
+        void setCheck(int position, boolean isChecked);
     }
 
     @Override

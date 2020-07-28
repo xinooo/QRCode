@@ -6,6 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -56,6 +58,16 @@ public class SettingFragment extends Fragment {
         mrecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SettingAdapter(mData);
         mrecyclerView.setAdapter(adapter);
+        adapter.setOnOperationListener(new SettingAdapter.OnOperationListener() {
+            @Override
+            public void setCheck(int position, boolean isChecked) {
+                CheckBox checkBox =  mrecyclerView.getChildAt(3).findViewById(R.id.box);
+                if(!isChecked){
+                    checkBox.setChecked(false);
+                }
+                checkBox.setEnabled(isChecked);
+            }
+        });
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
