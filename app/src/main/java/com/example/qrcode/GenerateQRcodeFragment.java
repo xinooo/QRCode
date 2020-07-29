@@ -1,6 +1,7 @@
 package com.example.qrcode;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,7 +9,9 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
@@ -29,8 +33,15 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Locale;
 
 public class GenerateQRcodeFragment extends Fragment implements View.OnClickListener {
     public View mview;
@@ -38,6 +49,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     private EditText name,organization,address,phone,email,detail;
     private ImageView qrcode;
     private HashMap<String,String> information;
+    private Bitmap QRCodeBitmap;
 
     //Toolbar
     private ImageView leftbutton,rightbutton;
@@ -71,6 +83,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
 
         btn.setOnClickListener(this);
         leftbutton.setOnClickListener(this);
+        rightbutton.setOnClickListener(this);
         return mview;
     }
 
@@ -116,7 +129,8 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                 try {
                     Gson gson = new Gson();
                     setData();
-                    qrcode.setImageBitmap(createQRCode(gson.toJson(information),300,getContext()));
+                    QRCodeBitmap = createQRCode(gson.toJson(information),300,getContext());
+                    qrcode.setImageBitmap(QRCodeBitmap);
                     rightbutton.setVisibility(View.VISIBLE);
                     clearText();
                 } catch (WriterException e) {
@@ -126,6 +140,9 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
             case R.id.scanner_toolbar_leftbutton:
                 clearText();
                 getFragmentManager().popBackStack(); //返回
+                break;
+            case R.id.scanner_toolbar_rightbutton:
+                ShareImage(getContext(),QRCodeBitmap);
                 break;
         }
     }
@@ -144,6 +161,9 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
             for (int x = 0; x < width; x++) {
                 if (matrix.get(x, y)) {
                     pixels[y * width + x] = 0xff000000;
+                }
+                else {
+                    pixels[y * width + x] = 0xffffffff;
                 }
             }
         }
@@ -172,5 +192,52 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
             cvbitmap.recycle();
         }
         return cvbitmap;
+    }
+
+    //分享QRCode
+    private void ShareImage(Context context,Bitmap bitmap){
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, SaveImage(context,bitmap)/*分享前要先存入本地*/);
+        shareIntent.setType("image/*");
+        startActivity(Intent.createChooser(shareIntent, "分享到"));
+    }
+    //儲存QRCode
+    private Uri SaveImage(Context context,Bitmap mBitmap){
+        //獲取內部儲存狀態
+        String state = Environment.getExternalStorageState();
+        //如果狀態不是mounted，無法讀寫
+        if (!state.equals(Environment.MEDIA_MOUNTED)) {
+            return null;
+        }
+        //儲存路徑
+        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/Share/";
+        //檔名(以時間命名)
+        Calendar now = new GregorianCalendar();
+        SimpleDateFormat simpleDate = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
+        String fileName = simpleDate.format(now.getTime());
+        //儲存圖片
+        try {
+            File file = new File(dir + fileName + ".png");
+            FileOutputStream out = null;
+            out = new FileOutputStream(file);
+            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+            /*
+            不使用Uri.fromFile(file)
+            使用FileProvider解决file:// URI引起的FileUriExposedException
+            1.在AndroidManifest.xml中添加provider
+            2.創建res/xml/provider_paths.xml
+            */
+            Uri photoUri = FileProvider.getUriForFile(
+                    context,
+                    context.getPackageName() + ".fileprovider",
+                    file);
+            return photoUri;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

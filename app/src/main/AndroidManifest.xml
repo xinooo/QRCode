@@ -30,7 +30,18 @@
             android:windowSoftInputMode="stateAlwaysHidden"
             android:screenOrientation="sensorPortrait"
             tools:ignore="LockedOrientationActivity,WrongManifestParent" />
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:ignore="WrongManifestParent">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
+
 
 
 
