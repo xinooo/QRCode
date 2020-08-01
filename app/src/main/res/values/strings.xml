@@ -13,4 +13,11 @@
     <string name="menu2">掃描影像</string>
     <string name="menu3">創建二維碼</string>
     <string name="menu4">設定</string>
+
+    <string name="sound">播放提示音</string>
+    <string name="isClipData">複製到剪貼板</string>
+    <string name="isAutoFocus">自動對焦</string>
+    <string name="isAutoFocus2">確定焦點</string>
+    <string name="openWeb">自動打開網頁</string>
+    <string name="invert">反色</string>
 </resources>

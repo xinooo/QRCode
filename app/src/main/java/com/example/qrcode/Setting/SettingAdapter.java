@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.qrcode.MainActivity;
 import com.example.qrcode.R;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 
@@ -36,10 +37,10 @@ public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         final SettingBean data = mData.get(position);
-        holder.tv_id.setText(data.getid());
+        holder.tv_id.setText(MainActivity.TW? data.getid_tw() : data.getid());
         if(!data.getnote().equals("")){
             holder.tv_note.setVisibility(View.VISIBLE);
-            holder.tv_note.setText(data.getnote());
+            holder.tv_note.setText(MainActivity.TW? data.getnote_tw() : data.getnote());
         }
         holder.box.setChecked(data.getisCheck());
         holder.box.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

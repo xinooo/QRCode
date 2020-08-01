@@ -149,6 +149,8 @@ public class SettingTools {
                 settingBean = new SettingBean();
                 settingBean.setid(jsonObject.optString("id"));
                 settingBean.setnote(jsonObject.optString("note"));
+                settingBean.setid_tw(jsonObject.optString("id_tw"));
+                settingBean.setnote_tw(jsonObject.optString("note_tw"));
                 settingBean.setisCheck(jsonObject.optBoolean("isCheck"));
                 dataList.add(settingBean);
             }
@@ -168,6 +170,8 @@ public class SettingTools {
                 jsonObject = new JSONObject();
                 jsonObject.put("id", settingBean.getid());
                 jsonObject.put("note", settingBean.getnote());
+                jsonObject.put("id_tw", settingBean.getid_tw());
+                jsonObject.put("note_tw", settingBean.getnote_tw());
                 jsonObject.put("isCheck", settingBean.getisCheck());
                 jsonArray.put(jsonObject);
             } catch (JSONException e) {
@@ -226,10 +230,12 @@ public class SettingTools {
                 Log.e("AA",id + isChecked);
                 sound = isChecked;
                 break;
+            case "複製到剪貼板":
             case "复制到剪贴板":
                 Log.e("AA",id + isChecked);
                 isClipData = isChecked;
                 break;
+            case "自動對焦":
             case "自动对焦":
                 Log.e("AA",id + isChecked);
                 isAutoFocus = isChecked;
@@ -239,9 +245,11 @@ public class SettingTools {
                     autoFocusCallback.setHandler(null, 0);
                 }
                 break;
+            case "確定焦點":
             case "确定焦点":
                 Log.e("AA",id + isChecked);
                 break;
+            case "自動打開網頁":
             case "自动打开网页":
                 Log.e("AA",id + isChecked);
                 openWeb = isChecked;

@@ -22,6 +22,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private Button button;
+    public static boolean TW = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
         button = (Button)findViewById(R.id.btn);
         ToastUtil.init(getApplicationContext());
         showPermission();
+        if (this.getResources().getConfiguration().locale.getCountry().equals("TW")) {
+            TW = true;
+        }
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
