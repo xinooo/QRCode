@@ -15,15 +15,4 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/include"/>
 
-    <Button
-        android:id="@+id/btn"
-        android:layout_width="165dp"
-        android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
-        android:text="@string/enter"
-        android:textSize="16sp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/btn_bg"
-        android:layout_below="@+id/recyclerview"/>
-
 </RelativeLayout>

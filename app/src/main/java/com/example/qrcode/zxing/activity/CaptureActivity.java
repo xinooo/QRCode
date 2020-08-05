@@ -33,6 +33,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.qrcode.GenerateQRcodeFragment;
 import com.example.qrcode.GetImageResult;
+import com.example.qrcode.ScanResultDialog;
 import com.example.qrcode.Setting.SettingBean;
 import com.example.qrcode.Setting.SettingFragment;
 import com.example.qrcode.Setting.SettingTools;
@@ -77,9 +78,9 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 	private SurfaceView surfaceView;
 	private List<SettingBean> mData = new ArrayList<SettingBean>();
 	public static String mCachePath;
-	private ClipboardManager myClipboard;
 	public static TextView invert;
 	private boolean isFirst = true;
+	private ScanResultDialog scanResultDialog;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -107,7 +108,6 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		flashlight.setOnClickListener(this);
         surfaceView.setOnClickListener(this);
 		navigationView.setNavigationItemSelectedListener(this);
-		myClipboard = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
 
 		autoFocusCallback = new AutoFocusCallback();
 		String jsonData = SettingTools.readFile("setting.json",mCachePath);
@@ -164,14 +164,13 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		if (resultString.equals("")) {
 			Toast.makeText(CaptureActivity.this, "failed!", Toast.LENGTH_SHORT).show();
 		} else {
-			// System.out.println("Result:"+resultString);
 			Intent resultIntent = new Intent();
 			Bundle bundle = new Bundle();
 			bundle.putString("result", resultString);
 			resultIntent.putExtras(bundle);
 			this.setResult(RESULT_OK, resultIntent);
-//			ToastUtil.showMessageOnCenter(resultString);
-			showDialog(resultString,barcode);
+			scanResultDialog = new ScanResultDialog(this,resultString,barcode);
+			scanResultDialog.show();
 			SettingTools.todo(this,resultString,true);
 		}
 //		CaptureActivity.this.finish();
@@ -289,10 +288,12 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 						Bitmap photobitmap = GetImageResult.getBitmap(selectPhoto);
 						Result result = GetImageResult.scanningImage(photobitmap);
 						final String text = result.getText();
-//						ToastUtil.showMessageOnCenter(text);
-						showDialog(text,null);
+						scanResultDialog = new ScanResultDialog(this,text,photobitmap);
+						scanResultDialog.show();
 						SettingTools.todo(this,text,false);
 					}catch (Exception e){
+						scanResultDialog = new ScanResultDialog(this,"掃描失敗",null);
+						scanResultDialog.show();
 						e.printStackTrace();
 					}
 					break;
@@ -332,24 +333,5 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 			String s = data.getid();
 			SettingTools.settingChange(s,data.getisCheck());
 		}
-	}
-
-	private void showDialog(String resultString, Bitmap barcode){
-		ImageView lookImage = new ImageView(this);
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("掃描結果");
-		if(barcode != null){
-			lookImage.setImageBitmap(barcode);
-			builder.setView(lookImage);
-		}
-		builder.setMessage(resultString);
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface arg0, int arg1) {
-				isFirst = false;
-				CaptureActivity.handler.restartPreviewAndDecode();
-			}
-		});
-		builder.setCancelable(false);
-		builder.show();
 	}
 }

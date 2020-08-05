@@ -25,7 +25,6 @@ public class SettingFragment extends Fragment {
     private String mCachePath;
     public View mview;
     private RecyclerView mrecyclerView;
-    private Button btn;
     private SettingAdapter adapter;
     private List<SettingBean> mData = new ArrayList<SettingBean>();
 
@@ -50,7 +49,6 @@ public class SettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         mview = inflater.inflate(R.layout.settingfragment, container, false);
         mrecyclerView = (RecyclerView)mview.findViewById(R.id.recyclerview);
-        btn = (Button)mview.findViewById(R.id.btn);
         //Toolbar
         title = (TextView)mview.findViewById(R.id.scanner_toolbar_title);
         leftbutton = (ImageView) mview.findViewById(R.id.scanner_toolbar_leftbutton);
@@ -78,12 +76,6 @@ public class SettingFragment extends Fragment {
                     checkBox.setChecked(false);
                 }
                 checkBox.setEnabled(isChecked);
-            }
-        });
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager().popBackStack(); //返回
             }
         });
         leftbutton.setOnClickListener(new View.OnClickListener() {
