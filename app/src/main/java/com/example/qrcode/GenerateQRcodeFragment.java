@@ -12,6 +12,8 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +27,12 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.example.qrcode.Setting.SettingTools;
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
@@ -45,11 +49,12 @@ import java.util.Locale;
 
 public class GenerateQRcodeFragment extends Fragment implements View.OnClickListener {
     public View mview;
-    private Button btn;
+    private Button btn,select_icon;
     private EditText name,organization,address,phone,email,detail;
-    private ImageView qrcode;
+    private ImageView qrcode,icon;
     private HashMap<String,String> information;
     private Bitmap QRCodeBitmap;
+    private String iconPath = "";
 
     //Toolbar
     private ImageView leftbutton,rightbutton;
@@ -82,6 +87,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         toolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
 
         btn.setOnClickListener(this);
+        select_icon.setOnClickListener(this);
         leftbutton.setOnClickListener(this);
         rightbutton.setOnClickListener(this);
         return mview;
@@ -90,6 +96,8 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     private void findViewById(){
         btn = (Button)mview.findViewById(R.id.btn);
         qrcode = (ImageView)mview.findViewById(R.id.qrcode);
+        select_icon = (Button) mview.findViewById(R.id.select_icon);
+        icon = (ImageView)mview.findViewById(R.id.icon);
         name = (EditText)mview.findViewById(R.id.name);
         organization = (EditText)mview.findViewById(R.id.organization);
         address = (EditText)mview.findViewById(R.id.address);
@@ -129,7 +137,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                 try {
                     Gson gson = new Gson();
                     setData();
-                    QRCodeBitmap = createQRCode(gson.toJson(information),300,getContext());
+                    QRCodeBitmap = createQRCode(gson.toJson(information),250,getContext());
                     qrcode.setImageBitmap(QRCodeBitmap);
                     rightbutton.setVisibility(View.VISIBLE);
                     clearText();
@@ -144,6 +152,35 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
             case R.id.scanner_toolbar_rightbutton:
                 ShareImage(getContext(),QRCodeBitmap);
                 break;
+            case R.id.select_icon:
+                Intent i = new Intent(Intent.ACTION_PICK, null);
+                i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                startActivityForResult(i, 0);
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == -1) {
+            switch (requestCode) {
+                case 0:
+                    //從相冊獲取圖片
+                    try{
+                        final Uri imageUri = data.getData();
+                        Log.e("imageUri:",imageUri+"");
+                        String selectPhoto = GetImageResult.getRealPathFromUri(getActivity(),imageUri);
+                        Log.e("selectPhoto:",selectPhoto);
+                        iconPath = selectPhoto;
+                        icon.setImageBitmap(GetImageResult.getBitmap(iconPath));
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -170,8 +207,8 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         Bitmap bitmap = Bitmap.createBitmap(width, height,
                 Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        Bitmap logo = BitmapFactory.decodeResource(context.getResources(), R.mipmap.face005, null);
-        return addLogo(bitmap,logo);
+        Bitmap logo1 = BitmapFactory.decodeResource(context.getResources(), R.mipmap.face005, null);
+        return  addLogo(bitmap,GetImageResult.getBitmap(iconPath) != null? GetImageResult.getBitmap(iconPath) : logo1);
     }
 
     //合成bitmap
@@ -221,7 +258,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
             File file = new File(dir + fileName + ".png");
             FileOutputStream out = null;
             out = new FileOutputStream(file);
-            mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            mBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
             /*
