@@ -30,12 +30,32 @@ public class GetImageResult {
             File f= new File(path);
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            options.inJustDecodeBounds = true;
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
+            options.inSampleSize = calculateInSampleSize(options,200,200);
+            options.inJustDecodeBounds =false;
             bitmap = BitmapFactory.decodeStream(new FileInputStream(f), null, options);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return bitmap ;
     }
+
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqHeight, int reqWidth) {
+        int height = options.outHeight;
+        int width = options.outWidth;
+        int inSampleSize = 1;
+        if(height>reqHeight||width>reqWidth){
+            int halfHeight = height/2;
+            int halfWidth = width/2;
+            //计算缩放比，是2的指数
+            while((halfHeight/inSampleSize)>=reqHeight&&(halfWidth/inSampleSize)>=reqWidth){
+                inSampleSize*=2;
+            }
+        }
+        return inSampleSize;
+    }
+
     /**
      * 根据图片的Uri获取图片的绝对路径。@uri 图片的uri
      * @return 如果Uri对应的图片存在,那么返回该图片的绝对路径,否则返回null
