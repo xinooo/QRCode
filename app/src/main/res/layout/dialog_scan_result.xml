@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:layout_below="@+id/title"
-        android:gravity="center"
+        android:gravity="left"
         android:text="掃描結果"
         android:textColor="@color/black"
         android:textSize="18sp" />
@@ -35,10 +35,21 @@
         android:layout_below="@+id/tv_result"
         android:layout_marginHorizontal="50dp" />
 
+    <TextView
+        android:id="@+id/connect_wifi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/im_result"
+        android:gravity="center"
+        android:text="連接到wifi"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="18sp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/im_result"
+        android:layout_below="@id/connect_wifi"
         android:layout_margin="20dp">
 
         <TextView

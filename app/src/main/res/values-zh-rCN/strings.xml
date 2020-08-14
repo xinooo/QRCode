@@ -20,4 +20,8 @@
     <string name="isAutoFocus2">确定焦点</string>
     <string name="openWeb">自动打开网页</string>
     <string name="invert">反色</string>
+
+    <string name="dialog_ClipData">复制结果</string>
+    <string name="dialog_OpenWeb">打开网页</string>
+    <string name="dialog_OK">OK</string>
 </resources>

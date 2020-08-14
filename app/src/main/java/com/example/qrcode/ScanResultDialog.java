@@ -27,9 +27,10 @@ public class ScanResultDialog implements View.OnClickListener {
     private ViewGroup root;
     private String resultString;
     private Bitmap scanBitmap;
-    private TextView tv_result, b1, b2, b3;
+    private TextView tv_result, b1, b2, b3,connect_wifi;
     private ImageView im_result;
     public static ClipboardManager myClipboard ;
+    private String password, netWorkName, netWorkType;
 
     public ScanResultDialog(Activity activity, String string, Bitmap bitmap) {
         this.mactivity = activity;
@@ -59,12 +60,22 @@ public class ScanResultDialog implements View.OnClickListener {
         b2 = (TextView)root.findViewById(R.id.b2);
         b3 = (TextView)root.findViewById(R.id.b3);
         im_result = (ImageView) root.findViewById(R.id.im_result);
+        connect_wifi = (TextView)root.findViewById(R.id.connect_wifi);
+        boolean isWiFi = resultString.contains("P:") && resultString.contains("T:");
+        connect_wifi.setVisibility(isWiFi? View.VISIBLE : View.GONE);
 
         myClipboard= (ClipboardManager)mactivity.getSystemService(Context.CLIPBOARD_SERVICE);
         im_result.setVisibility(scanBitmap == null? View.GONE : View.VISIBLE);
-        tv_result.setText(resultString);
+        if (isWiFi){
+            decode_wifi(resultString);
+            String s = "WIFI：\nSSID："+netWorkName+"\npassword："+password+"\nType："+netWorkType;
+            tv_result.setText(s);
+        }else {
+            tv_result.setText(resultString);
+        }
         im_result.setImageBitmap(scanBitmap);
 
+        connect_wifi.setOnClickListener(this);
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
         b3.setOnClickListener(this);
@@ -98,5 +109,24 @@ public class ScanResultDialog implements View.OnClickListener {
             CaptureActivity.handler.restartPreviewAndDecode();
             dialog.dismiss();
         }
+        if (v == connect_wifi){
+            ToastUtil.showMessageOnCenter("Comming Soon!");
+        }
+    }
+
+    private void decode_wifi(String strResult){
+        String passwordTemp = strResult.substring(strResult
+                .indexOf("P:"));
+        password = passwordTemp.substring(2,
+                passwordTemp.indexOf(";"));
+        String netWorkTypeTemp = strResult.substring(strResult
+                .indexOf("T:"));
+        netWorkType = netWorkTypeTemp.substring(2,
+                netWorkTypeTemp.indexOf(";"));
+        String netWorkNameTemp = strResult.substring(strResult
+                .indexOf("S:"));
+        netWorkName = netWorkNameTemp.substring(2,
+                netWorkNameTemp.indexOf(";"));
+        Log.d("AAAAA","netWorkName："+netWorkName+", password："+password+", netWorkType："+netWorkType);
     }
 }
