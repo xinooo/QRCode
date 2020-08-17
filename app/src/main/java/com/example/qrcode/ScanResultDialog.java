@@ -31,6 +31,7 @@ public class ScanResultDialog implements View.OnClickListener {
     private ImageView im_result;
     public static ClipboardManager myClipboard ;
     private String password, netWorkName, netWorkType;
+    private WifiAutoConnectManager wifiAutoConnectManager;
 
     public ScanResultDialog(Activity activity, String string, Bitmap bitmap) {
         this.mactivity = activity;
@@ -63,6 +64,7 @@ public class ScanResultDialog implements View.OnClickListener {
         connect_wifi = (TextView)root.findViewById(R.id.connect_wifi);
         boolean isWiFi = resultString.contains("P:") && resultString.contains("T:");
         connect_wifi.setVisibility(isWiFi? View.VISIBLE : View.GONE);
+        wifiAutoConnectManager = new WifiAutoConnectManager(mactivity);
 
         myClipboard= (ClipboardManager)mactivity.getSystemService(Context.CLIPBOARD_SERVICE);
         im_result.setVisibility(scanBitmap == null? View.GONE : View.VISIBLE);
@@ -110,7 +112,7 @@ public class ScanResultDialog implements View.OnClickListener {
             dialog.dismiss();
         }
         if (v == connect_wifi){
-            ToastUtil.showMessageOnCenter("Comming Soon!");
+            wifiAutoConnectManager.connect(netWorkName,password, WifiAutoConnectManager.getNetWorkType(mactivity,netWorkType));
         }
     }
 
