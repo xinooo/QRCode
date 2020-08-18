@@ -75,7 +75,7 @@
             android:id="@+id/select_icon"
             android:layout_width="100dp"
             android:layout_height="50dp"
-            android:text="选择icon" />
+            android:text="@string/choice" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -106,13 +106,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="矩形"/>
+                android:text="@string/rect"/>
 
             <CheckBox
                 android:id="@+id/circle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="圓形"/>
+                android:text="@string/circle"/>
 
         </LinearLayout>
 
@@ -125,7 +125,7 @@
                 android:id="@+id/clear_icon"
                 android:layout_width="80dp"
                 android:layout_height="50dp"
-                android:text="清除"
+                android:text="@string/clear"
                 android:layout_gravity="right"/>
 
         </LinearLayout>
