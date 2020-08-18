@@ -53,6 +53,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     private HashMap<String,String> information;
     private Bitmap QRCodeBitmap;
     private String iconPath = "";
+    private int radius = 20;
 
     //Toolbar
     private ImageView leftbutton,rightbutton;
@@ -209,8 +210,11 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         Bitmap bitmap = Bitmap.createBitmap(width, height,
                 Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-        Bitmap logo1 = BitmapFactory.decodeResource(context.getResources(), R.mipmap.face005, null);
-        return  addLogo(bitmap,GetImageResult.getBitmap(iconPath) != null? GetImageResult.getBitmap(iconPath) : logo1);
+        if (GetImageResult.getBitmap(iconPath) == null){
+            return bitmap;
+        }else {
+            return  addLogo(bitmap, GetImageResult.getBitmap(iconPath));
+        }
     }
 
     //合成bitmap
@@ -223,27 +227,31 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         Paint paint = new Paint();
         Canvas canvas = new Canvas(cvbitmap);
 
+        int left = (bgWidth-logo.getWidth())/2;
+        int top = (bgHeigh-logo.getHeight())/2;
         //畫icon
-        final int color = 0xff424242;
+        final int color = 0xff007AFF;
         //設定座標點 Rect(左,上,右,下)
-        final Rect rect = new Rect((bgWidth-logo.getWidth())/2,
-                                    (bgHeigh-logo.getHeight())/2,
-                                    (bgWidth-logo.getWidth())/2+logo.getWidth(),
-                                    (bgHeigh-logo.getHeight())/2+logo.getHeight());
-        final RectF rectF = new RectF(rect);
+        Rect rect = new Rect(left+10,top+10,left+logo.getWidth()-10,top+logo.getHeight()-10);
+        RectF rectF = new RectF(rect);
         //去鋸齒
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
         //畫圓角矩形
-        canvas.drawRoundRect(rectF, 20, 20, paint);
-        //通过SRC_IN的模式取源图片和圆角矩形重叠部分
+        canvas.drawRoundRect(rectF, radius, radius, paint);
+        //通過SRC_IN的模式取原图片和圆角矩形重叠部分
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        //畫icon
         canvas.drawBitmap(logo,(bgWidth-logo.getWidth())/2,(bgHeigh-logo.getHeight())/2,paint);
 
-        //在icon下方畫QRCode
-        canvas = new Canvas(cvbitmap);
+        //通過DST_OVER的模式繪製在原图片下方
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OVER));
+        //畫圓角矩形
+        rect = new Rect(left,top,left+logo.getWidth(),top+logo.getHeight());
+        rectF = new RectF(rect);
+        canvas.drawRoundRect(rectF, radius, radius, paint);
+        //在icon下方畫QRCode
         canvas.drawBitmap(qrcode,0,0,paint);
         canvas.save();
         canvas.restore();

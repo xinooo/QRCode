@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -94,8 +95,9 @@
 
     <ImageView
         android:id="@+id/qrcode"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        custom:layout_constraintDimensionRatio="250:250"
+        android:layout_margin="10dp"/>
 
 </LinearLayout>
