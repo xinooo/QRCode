@@ -3,7 +3,6 @@ package com.example.qrcode.Image;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -19,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -47,8 +48,9 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     private final int CLIP_IMAGE = 1;
 
     public View mview;
-    private Button btn,select_icon;
+    private Button btn,select_icon,clear_icon;
     private EditText name,organization,address,phone,email,detail;
+    private CheckBox rect,circle;
     private ImageView qrcode,icon;
     private HashMap<String,String> information;
     private Bitmap QRCodeBitmap;
@@ -85,6 +87,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         title.setTextColor(getActivity().getResources().getColor(R.color.white));
         toolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
 
+        clear_icon.setOnClickListener(this);
         btn.setOnClickListener(this);
         select_icon.setOnClickListener(this);
         leftbutton.setOnClickListener(this);
@@ -103,12 +106,34 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         phone = (EditText)mview.findViewById(R.id.phone);
         email = (EditText)mview.findViewById(R.id.email);
         detail = (EditText)mview.findViewById(R.id.detail);
+        clear_icon = (Button) mview.findViewById(R.id.clear_icon);
+        rect = (CheckBox)mview.findViewById(R.id.rect);
+        circle = (CheckBox)mview.findViewById(R.id.circle);
 
         //Toolbar
         title = (TextView)mview.findViewById(R.id.scanner_toolbar_title);
         leftbutton = (ImageView) mview.findViewById(R.id.scanner_toolbar_leftbutton);
         rightbutton = (ImageView) mview.findViewById(R.id.scanner_toolbar_rightbutton);
         toolbar = (LinearLayout)mview.findViewById(R.id.include);
+
+        rect.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked){
+                    circle.setChecked(false);
+                    radius = 20;
+                }
+            }
+        });
+        circle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                if (isChecked){
+                    rect.setChecked(false);
+                    radius = 200;
+                }
+            }
+        });
     }
 
     private void clearText(){
@@ -146,6 +171,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                 break;
             case R.id.scanner_toolbar_leftbutton:
                 clearText();
+                iconPath = "";
                 getFragmentManager().popBackStack(); //返回
                 break;
             case R.id.scanner_toolbar_rightbutton:
@@ -155,6 +181,10 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                 Intent i = new Intent(Intent.ACTION_PICK, null);
                 i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                 startActivityForResult(i, GET_IMAGE);
+                break;
+            case R.id.clear_icon:
+                iconPath = "";
+                icon.setImageResource(R.drawable.select_icon_bg);
                 break;
         }
     }
