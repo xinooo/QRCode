@@ -40,6 +40,10 @@
             android:windowSoftInputMode="stateAlwaysHidden"
             android:screenOrientation="sensorPortrait"
             tools:ignore="LockedOrientationActivity,WrongManifestParent" />
+        <activity
+            android:name=".Image.ClipImage.CropActivity"
+            android:screenOrientation="sensorPortrait"
+            tools:ignore="LockedOrientationActivity"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

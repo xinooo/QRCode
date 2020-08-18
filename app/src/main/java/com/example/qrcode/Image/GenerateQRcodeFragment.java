@@ -1,4 +1,4 @@
-package com.example.qrcode;
+package com.example.qrcode.Image;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,10 +8,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,30 +25,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
-import com.example.qrcode.Setting.SettingTools;
+import com.example.qrcode.Image.ClipImage.CropActivity;
+import com.example.qrcode.R;
 import com.google.gson.Gson;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.Result;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Locale;
+
 
 public class GenerateQRcodeFragment extends Fragment implements View.OnClickListener {
+
+    private final int GET_IMAGE = 0;
+    private final int CLIP_IMAGE = 1;
+
     public View mview;
     private Button btn,select_icon;
     private EditText name,organization,address,phone,email,detail;
@@ -137,7 +135,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
                 try {
                     Gson gson = new Gson();
                     setData();
-                    QRCodeBitmap = createQRCode(gson.toJson(information),250,getContext());
+                    QRCodeBitmap = createQRCode(gson.toJson(information),1000,getContext());
                     qrcode.setImageBitmap(QRCodeBitmap);
                     rightbutton.setVisibility(View.VISIBLE);
                     clearText();
@@ -155,7 +153,7 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
             case R.id.select_icon:
                 Intent i = new Intent(Intent.ACTION_PICK, null);
                 i.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
-                startActivityForResult(i, 0);
+                startActivityForResult(i, GET_IMAGE);
                 break;
         }
     }
@@ -165,18 +163,22 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == -1) {
             switch (requestCode) {
-                case 0:
+                case GET_IMAGE:
                     //從相冊獲取圖片
                     try{
                         final Uri imageUri = data.getData();
                         Log.e("imageUri:",imageUri+"");
                         String selectPhoto = GetImageResult.getRealPathFromUri(getActivity(),imageUri);
                         Log.e("selectPhoto:",selectPhoto);
-                        iconPath = selectPhoto;
-                        icon.setImageBitmap(GetImageResult.getBitmap(iconPath));
+                        startActivityForResult(new Intent(getActivity(), CropActivity.class).putExtra("path", selectPhoto), CLIP_IMAGE);
                     }catch (Exception e){
                         e.printStackTrace();
                     }
+                    break;
+                case CLIP_IMAGE:
+                    String path = data.getStringExtra("path");
+                    iconPath = path;
+                    icon.setImageBitmap(GetImageResult.getBitmap(iconPath));
                     break;
                 default:
                     break;
@@ -220,9 +222,29 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
         Bitmap cvbitmap = Bitmap.createBitmap(bgWidth,bgHeigh, Bitmap.Config.ARGB_8888);
         Paint paint = new Paint();
         Canvas canvas = new Canvas(cvbitmap);
-        canvas.drawBitmap(qrcode,0,0,paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
+
+        //畫icon
+        final int color = 0xff424242;
+        //設定座標點 Rect(左,上,右,下)
+        final Rect rect = new Rect((bgWidth-logo.getWidth())/2,
+                                    (bgHeigh-logo.getHeight())/2,
+                                    (bgWidth-logo.getWidth())/2+logo.getWidth(),
+                                    (bgHeigh-logo.getHeight())/2+logo.getHeight());
+        final RectF rectF = new RectF(rect);
+        //去鋸齒
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(color);
+        //畫圓角矩形
+        canvas.drawRoundRect(rectF, 20, 20, paint);
+        //通过SRC_IN的模式取源图片和圆角矩形重叠部分
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(logo,(bgWidth-logo.getWidth())/2,(bgHeigh-logo.getHeight())/2,paint);
+
+        //在icon下方畫QRCode
+        canvas = new Canvas(cvbitmap);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OVER));
+        canvas.drawBitmap(qrcode,0,0,paint);
         canvas.save();
         canvas.restore();
         if (cvbitmap.isRecycled()){
@@ -235,46 +257,9 @@ public class GenerateQRcodeFragment extends Fragment implements View.OnClickList
     private void ShareImage(Context context,Bitmap bitmap){
         Intent shareIntent = new Intent();
         shareIntent.setAction(Intent.ACTION_SEND);
-        shareIntent.putExtra(Intent.EXTRA_STREAM, SaveImage(context,bitmap)/*分享前要先存入本地*/);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, ImageTools.SaveImage(context,bitmap)/*分享前要先存入本地*/);
         shareIntent.setType("image/*");
         startActivity(Intent.createChooser(shareIntent, "分享到"));
     }
-    //儲存QRCode
-    private Uri SaveImage(Context context,Bitmap mBitmap){
-        //獲取內部儲存狀態
-        String state = Environment.getExternalStorageState();
-        //如果狀態不是mounted，無法讀寫
-        if (!state.equals(Environment.MEDIA_MOUNTED)) {
-            return null;
-        }
-        //儲存路徑
-        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/Share/";
-        //檔名(以時間命名)
-        Calendar now = new GregorianCalendar();
-        SimpleDateFormat simpleDate = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
-        String fileName = simpleDate.format(now.getTime());
-        //儲存圖片
-        try {
-            File file = new File(dir + fileName + ".png");
-            FileOutputStream out = null;
-            out = new FileOutputStream(file);
-            mBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.flush();
-            out.close();
-            /*
-            不使用Uri.fromFile(file)
-            使用FileProvider解决file:// URI引起的FileUriExposedException
-            1.在AndroidManifest.xml中添加provider
-            2.創建res/xml/provider_paths.xml
-            */
-            Uri photoUri = FileProvider.getUriForFile(
-                    context,
-                    context.getPackageName() + ".fileprovider",
-                    file);
-            return photoUri;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 }

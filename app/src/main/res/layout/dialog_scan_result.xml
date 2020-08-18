@@ -43,7 +43,7 @@
         android:layout_below="@+id/im_result"
         android:gravity="center"
         android:text="連接到wifi"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/selected_txt"
         android:textSize="18sp" />
 
     <LinearLayout

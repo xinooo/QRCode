@@ -1,7 +1,5 @@
 package com.example.qrcode.zxing.activity;
 
-import android.content.ClipboardManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -31,8 +28,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.qrcode.GenerateQRcodeFragment;
-import com.example.qrcode.GetImageResult;
+import com.example.qrcode.Image.GenerateQRcodeFragment;
+import com.example.qrcode.Image.GetImageResult;
 import com.example.qrcode.ScanResultDialog;
 import com.example.qrcode.Setting.SettingBean;
 import com.example.qrcode.Setting.SettingFragment;

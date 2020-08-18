@@ -1,4 +1,4 @@
-package com.example.qrcode;
+package com.example.qrcode.Image;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

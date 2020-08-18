@@ -5,6 +5,8 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="black">#ff000000</color>
     <color name="white">#ffffffff</color>
+    <color name="selected">#6BB4BE</color>
+    <color name="noselected">#146478</color>
     <!-- QRcode -->
     <color name="bg_color">#EDEDED</color>
     <color name="contents_text">#ff000000</color>
