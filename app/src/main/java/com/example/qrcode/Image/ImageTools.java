@@ -20,7 +20,11 @@ import java.util.Locale;
 public class ImageTools {
     public static String setPhotoPath() {
         //儲存路徑
-        String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/Share/";
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/Pictures/Share/");
+        if(!file.exists()){
+            file.mkdirs();
+        }
+        String dir = file.toString();
         //檔名(以時間命名)
         Calendar now = new GregorianCalendar();
         SimpleDateFormat simpleDate = new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault());
