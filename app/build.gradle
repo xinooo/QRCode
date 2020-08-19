@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.qrcode"
-        minSdkVersion 23
+        minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -36,6 +36,6 @@ dependencies {
     //OkHttp
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
 
-    implementation 'com.jakewharton:butterknife:10.2.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
+    implementation 'com.jakewharton:butterknife:8.1.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.1.0'
 }
