@@ -207,6 +207,7 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
         Hashtable hints = new Hashtable();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        hints.put(EncodeHintType.MARGIN,1);
         BitMatrix matrix = new MultiFormatWriter().encode(str,
                 BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight,hints);
         int width = matrix.getWidth();
