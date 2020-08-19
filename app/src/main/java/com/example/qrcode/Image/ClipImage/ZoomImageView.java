@@ -44,7 +44,7 @@ public class ZoomImageView extends AppCompatImageView {
     }
 
     private void init() {
-        clipPadding = dp2px(20);
+        clipPadding = dp2px(40);
     }
 
     public Bitmap getCropBitmap() {

@@ -50,7 +50,7 @@ public class ClipBoardView extends View {
     }
 
     private void init() {
-        clipPadding = dp2px(20);
+        clipPadding = dp2px(40);
         fillColor = 0x33000000;
         strokeColor = getResources().getColor(R.color.white);
         strokeWidth = dp2px(1);
