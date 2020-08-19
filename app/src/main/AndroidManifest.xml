@@ -44,6 +44,11 @@
             android:name=".Image.ClipImage.CropActivity"
             android:screenOrientation="sensorPortrait"
             tools:ignore="LockedOrientationActivity"/>
+        <activity
+            android:name=".Image.GenerateQRcodeActivity"
+            android:screenOrientation="sensorPortrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            tools:ignore="LockedOrientationActivity"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

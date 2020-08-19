@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.qrcode.Image.GenerateQRcodeActivity;
 import com.example.qrcode.Image.GenerateQRcodeFragment;
 import com.example.qrcode.Image.GetImageResult;
 import com.example.qrcode.ScanResultDialog;
@@ -314,7 +315,8 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 				return true;
 			case R.id.menu3:
 				drawerLayout.closeDrawer(GravityCompat.START);
-				showFragment(generateQRcodeFragment,"generateQRcode");
+//				showFragment(generateQRcodeFragment,"generateQRcode");
+				startActivity(new Intent(CaptureActivity.this, GenerateQRcodeActivity.class));
 				return true;
 			case R.id.menu4:
 				drawerLayout.closeDrawer(GravityCompat.START);
