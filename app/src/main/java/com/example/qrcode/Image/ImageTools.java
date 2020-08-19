@@ -1,6 +1,7 @@
 package com.example.qrcode.Image;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
@@ -89,6 +90,17 @@ public class ImageTools {
                 } catch (IOException ignore) {
                 }
             }
+        }
+    }
+
+    public static void DeleteIcon(Context context, String path){
+        File file = new File(path);
+        if (file.exists()){
+            file.delete();
+            Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+            Uri photoUri = FileProvider.getUriForFile(context,context.getPackageName() + ".fileprovider",file);
+            intent.setData(photoUri);
+            context.sendBroadcast(intent);
         }
     }
 }
