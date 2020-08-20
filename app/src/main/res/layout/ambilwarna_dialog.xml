@@ -128,16 +128,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/ambilwarna_state"
-
             android:paddingTop="20dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:paddingBottom="10dp">
 
+            <EditText
+                android:id="@+id/tv_color"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/edit_bg"
+                android:gravity="center"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:textColor="#000000"
+                android:textSize="16sp"/>
+
             <TextView
                 android:id="@+id/cancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="1"
                 android:background="@drawable/btn_bg3"
                 android:gravity="center"

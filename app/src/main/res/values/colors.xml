@@ -7,6 +7,9 @@
     <color name="white">#ffffffff</color>
     <color name="selected">#6BB4BE</color>
     <color name="noselected">#146478</color>
+    <color name="stroke">#fc8f3e</color>
+    <color name="selected1">#fbcd6a</color>
+    <color name="noselected1">#FFA461</color>
     <!-- QRcode -->
     <color name="bg_color">#EDEDED</color>
     <color name="contents_text">#ff000000</color>

@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,7 +22,7 @@ public class AmbilWarnaDialog {
 	public interface OnAmbilWarnaListener {
 		void onCancel(AmbilWarnaDialog dialog);
 
-		void onOk(AmbilWarnaDialog dialog, int color);
+		void onOk(AmbilWarnaDialog dialog, String color);
 	}
 
 	private final AlertDialog dialog;
@@ -39,6 +40,7 @@ public class AmbilWarnaDialog {
     private final ViewGroup viewContainer;
     private final TextView cancel;
     private final TextView enter;
+    private final EditText tv_color;
 	final float[] currentColorHsv = new float[3];
 	int alpha;
 
@@ -86,6 +88,7 @@ public class AmbilWarnaDialog {
 		viewAlphaCheckered = (ImageView) view.findViewById(R.id.ambilwarna_alphaCheckered);
 		cancel = (TextView)view.findViewById(R.id.cancel);
         enter = (TextView)view.findViewById(R.id.enter);
+        tv_color = (EditText) view.findViewById(R.id.tv_color);
 
         { // hide/show alpha
 			viewAlphaOverlay.setVisibility(supportsAlpha? View.VISIBLE: View.GONE);
@@ -96,6 +99,7 @@ public class AmbilWarnaDialog {
 		viewSatVal.setHue(getHue());
 		viewOldColor.setBackgroundColor(color);
 		viewNewColor.setBackgroundColor(color);
+        tv_color.setText(String.format("#%08x", color));
 
 		viewHue.setOnTouchListener(new View.OnTouchListener() {
 			@Override
@@ -117,6 +121,7 @@ public class AmbilWarnaDialog {
 					viewSatVal.setHue(getHue());
 					moveCursor();
 					viewNewColor.setBackgroundColor(getColor());
+                    tv_color.setText(String.format("#%08x", getColor()));
 					updateAlphaView();
 					return true;
 				}
@@ -146,6 +151,7 @@ public class AmbilWarnaDialog {
 					int col = AmbilWarnaDialog.this.getColor();
 					int c = a << 24 | col & 0x00ffffff;
 					viewNewColor.setBackgroundColor(c);
+                    tv_color.setText(String.format("#%08x", c));
 					return true;
 				}
 				return false;
@@ -172,7 +178,7 @@ public class AmbilWarnaDialog {
 					// update view
 					moveTarget();
 					viewNewColor.setBackgroundColor(getColor());
-
+                    tv_color.setText(String.format("#%08x", getColor()));
 					return true;
 				}
 				return false;
@@ -202,7 +208,7 @@ public class AmbilWarnaDialog {
             @Override
             public void onClick(View view) {
                 if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, getColor());
+					AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, tv_color.getText().toString());
 					dialog.dismiss();
 				}
             }

@@ -3,6 +3,7 @@ package com.example.qrcode.Image;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.qrcode.AmbilWarna.AmbilWarnaDialog;
 import com.example.qrcode.Image.ClipImage.CropActivity;
 import com.example.qrcode.R;
 import com.google.gson.Gson;
@@ -50,7 +52,8 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
     private HashMap<String,String> information;
     private Bitmap QRCodeBitmap;
     private String iconPath = "";
-    private int radius = 20;
+    private int radius = 20, qrcode_color = 0xff000000;
+    private TextView tv_color;
 
     //Toolbar
     private ImageView leftbutton,rightbutton;
@@ -77,6 +80,7 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
         select_icon.setOnClickListener(this);
         leftbutton.setOnClickListener(this);
         rightbutton.setOnClickListener(this);
+        tv_color.setOnClickListener(this);
     }
 
     private void findViewById(){
@@ -93,6 +97,7 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
         clear_icon = (Button) findViewById(R.id.clear_icon);
         rect = (CheckBox)findViewById(R.id.rect);
         circle = (CheckBox)findViewById(R.id.circle);
+        tv_color = (TextView) findViewById(R.id.tv_color);
 
         //Toolbar
         title = (TextView)findViewById(R.id.scanner_toolbar_title);
@@ -172,6 +177,9 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
                 iconPath = "";
                 icon.setImageResource(R.drawable.select_icon_bg);
                 break;
+            case R.id.tv_color:
+                showDialog();
+                break;
         }
     }
 
@@ -217,7 +225,7 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (matrix.get(x, y)) {
-                    pixels[y * width + x] = 0xff000000;
+                    pixels[y * width + x] = qrcode_color;
                 }
                 else {
                     pixels[y * width + x] = 0xffffffff;
@@ -247,7 +255,7 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
         int left = (bgWidth-logo.getWidth())/2;
         int top = (bgHeigh-logo.getHeight())/2;
         //畫icon
-        final int color = 0xff007AFF;
+        final int color = 0xffAAAAAA;
         //設定座標點 Rect(左,上,右,下)
         Rect rect = new Rect(left+10,top+10,left+logo.getWidth()-10,top+logo.getHeight()-10);
         RectF rectF = new RectF(rect);
@@ -285,5 +293,21 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
         shareIntent.putExtra(Intent.EXTRA_STREAM, ImageTools.SaveImage(this,bitmap)/*分享前要先存入本地*/);
         shareIntent.setType("image/*");
         startActivity(Intent.createChooser(shareIntent, "分享到"));
+    }
+
+    private void showDialog(){
+        AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(GenerateQRcodeActivity.this, qrcode_color, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, String color) {
+                qrcode_color = Color.parseColor(color);
+                tv_color.setBackgroundColor(Color.parseColor(color));
+            }
+        });
+        ambilWarnaDialog.show();
     }
 }
