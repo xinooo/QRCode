@@ -1,9 +1,8 @@
 package com.example.qrcode.AmbilWarna;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
@@ -13,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.qrcode.R;
 
@@ -24,19 +24,21 @@ public class AmbilWarnaDialog {
 		void onOk(AmbilWarnaDialog dialog, int color);
 	}
 
-	final AlertDialog dialog;
+	private final AlertDialog dialog;
 	private final boolean supportsAlpha;
 	final OnAmbilWarnaListener listener;
-	final View viewHue;
-	final AmbilWarnaSquare viewSatVal;
-	final ImageView viewCursor;
-	final ImageView viewAlphaCursor;
-	final View viewOldColor;
-	final View viewNewColor;
-	final View viewAlphaOverlay;
-	final ImageView viewTarget;
-	final ImageView viewAlphaCheckered;
-	final ViewGroup viewContainer;
+    private final View viewHue;
+    private final AmbilWarnaSquare viewSatVal;
+    private final ImageView viewCursor;
+    private final ImageView viewAlphaCursor;
+    private final View viewOldColor;
+    private final View viewNewColor;
+    private final View viewAlphaOverlay;
+    private final ImageView viewTarget;
+    private final ImageView viewAlphaCheckered;
+    private final ViewGroup viewContainer;
+    private final TextView cancel;
+    private final TextView enter;
 	final float[] currentColorHsv = new float[3];
 	int alpha;
 
@@ -59,7 +61,8 @@ public class AmbilWarnaDialog {
 	 * @param supportsAlpha whether alpha/transparency controls are enabled
 	 * @param listener an OnAmbilWarnaListener, allowing you to get back error or OK
 	 */
-	public AmbilWarnaDialog(final Context context, int color, boolean supportsAlpha, OnAmbilWarnaListener listener) {
+	@SuppressLint("ClickableViewAccessibility")
+    public AmbilWarnaDialog(final Context context, int color, boolean supportsAlpha, OnAmbilWarnaListener listener) {
 		this.supportsAlpha = supportsAlpha;
 		this.listener = listener;
 
@@ -81,8 +84,10 @@ public class AmbilWarnaDialog {
 		viewAlphaOverlay = view.findViewById(R.id.ambilwarna_overlay);
 		viewAlphaCursor = (ImageView) view.findViewById(R.id.ambilwarna_alphaCursor);
 		viewAlphaCheckered = (ImageView) view.findViewById(R.id.ambilwarna_alphaCheckered);
+		cancel = (TextView)view.findViewById(R.id.cancel);
+        enter = (TextView)view.findViewById(R.id.enter);
 
-		{ // hide/show alpha
+        { // hide/show alpha
 			viewAlphaOverlay.setVisibility(supportsAlpha? View.VISIBLE: View.GONE);
 			viewAlphaCursor.setVisibility(supportsAlpha? View.VISIBLE: View.GONE);
 			viewAlphaCheckered.setVisibility(supportsAlpha? View.VISIBLE: View.GONE);
@@ -174,34 +179,9 @@ public class AmbilWarnaDialog {
 			}
 		});
 
-		dialog = new AlertDialog.Builder(context)
-		.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, getColor());
-				}
-			}
-		})
-		.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
-				}
-			}
-		})
-		.setOnCancelListener(new OnCancelListener() {
-			// if back button is used, call back our listener.
-			@Override
-			public void onCancel(DialogInterface paramDialogInterface) {
-				if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
-				}
-
-			}
-		})
-		.create();
+		dialog = new AlertDialog.Builder(context,R.style.dialog_color_picker)
+                .setCancelable(false)
+		        .create();
 		// kill all padding from the dialog window
 		dialog.setView(view, 0, 0, 0, 0);
 
@@ -217,6 +197,26 @@ public class AmbilWarnaDialog {
 				view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
 			}
 		});
+
+		enter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (AmbilWarnaDialog.this.listener != null) {
+					AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, getColor());
+					dialog.dismiss();
+				}
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (AmbilWarnaDialog.this.listener != null) {
+					AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
+                    dialog.dismiss();
+				}
+            }
+        });
 	}
 
 	protected void moveCursor() {
