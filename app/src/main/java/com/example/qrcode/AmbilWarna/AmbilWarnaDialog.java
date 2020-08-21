@@ -5,6 +5,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.qrcode.R;
+import com.example.qrcode.ToastUtil;
 
 
 public class AmbilWarnaDialog {
@@ -209,8 +212,12 @@ public class AmbilWarnaDialog {
             @Override
             public void onClick(View view) {
                 if (AmbilWarnaDialog.this.listener != null) {
-					AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, tv_color.getText().toString());
-					dialog.dismiss();
+                	if (tv_color.getText().toString().length() >= 9){
+						AmbilWarnaDialog.this.listener.onOk(AmbilWarnaDialog.this, tv_color.getText().toString());
+						dialog.dismiss();
+					}else {
+						ToastUtil.showMessageOnCenter("輸入錯誤，請重新輸入\n輸入格式：#ff000000");
+					}
 				}
             }
         });
@@ -221,6 +228,34 @@ public class AmbilWarnaDialog {
                 if (AmbilWarnaDialog.this.listener != null) {
 					AmbilWarnaDialog.this.listener.onCancel(AmbilWarnaDialog.this);
                     dialog.dismiss();
+				}
+            }
+        });
+
+        tv_color.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+				int newcolor;
+				if (editable.length()>=9){
+					newcolor = Color.parseColor(editable.toString());
+					Color.colorToHSV(newcolor, currentColorHsv);
+					alpha = Color.alpha(newcolor);
+					viewSatVal.setHue(getHue());
+					viewNewColor.setBackgroundColor(newcolor);
+					moveCursor();
+					if (AmbilWarnaDialog.this.supportsAlpha) moveAlphaCursor();
+					moveTarget();
+					if (AmbilWarnaDialog.this.supportsAlpha) updateAlphaView();
 				}
             }
         });
