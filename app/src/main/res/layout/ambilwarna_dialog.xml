@@ -19,8 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:clipToPadding="false"
-
-            android:padding="15dp" >
+            android:padding="10dp" >
 
             <com.example.qrcode.AmbilWarna.AmbilWarnaSquare
                 android:id="@+id/ambilwarna_viewSatBri"

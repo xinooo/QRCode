@@ -179,6 +179,7 @@ public class AmbilWarnaDialog {
 					moveTarget();
 					viewNewColor.setBackgroundColor(getColor());
                     tv_color.setText(String.format("#%08x", getColor()));
+					updateAlphaView();
 					return true;
 				}
 				return false;
