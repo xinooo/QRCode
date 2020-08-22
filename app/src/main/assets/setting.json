@@ -1,44 +1,47 @@
-[
-  {
-    "id": "播放提示音",
-    "id_tw": "播放提示音",
-    "note": "",
-    "note_tw": "",
-    "isCheck": false
-  },
-  {
-    "id": "复制到剪贴板",
-    "id_tw": "複製到剪貼板",
-    "note": "",
-    "note_tw": "",
-    "isCheck": false
-  },
-  {
-    "id": "自动对焦",
-    "id_tw": "自動對焦",
-    "note": "",
-    "note_tw": "",
-    "isCheck": true
-  },
-  {
-    "id": "确定焦点",
-    "id_tw": "確定焦點",
-    "note": "仅在打开自动对焦时可用",
-    "note_tw": "僅在打開自動對焦時可用",
-    "isCheck": true
-  },
-  {
-    "id": "自动打开网页",
-    "id_tw": "自動打開網頁",
-    "note": "",
-    "note_tw": "",
-    "isCheck": true
-  },
-  {
-    "id": "反色",
-    "id_tw": "反色",
-    "note": "扫描黑色背景上的白色条码，仅适用于部份设备",
-    "note_tw": "掃描黑色背景上的白色條碼，僅適用於部份設備",
-    "isCheck": false
-  }
-]
+{
+  "root":5,
+  "data":[
+    {
+      "id": "播放提示音",
+      "id_tw": "播放提示音",
+      "note": "",
+      "note_tw": "",
+      "isCheck": false
+    },
+    {
+      "id": "复制到剪贴板",
+      "id_tw": "複製到剪貼板",
+      "note": "",
+      "note_tw": "",
+      "isCheck": false
+    },
+    {
+      "id": "自动对焦",
+      "id_tw": "自動對焦",
+      "note": "",
+      "note_tw": "",
+      "isCheck": true
+    },
+    {
+      "id": "确定焦点",
+      "id_tw": "確定焦點",
+      "note": "仅在打开自动对焦时可用",
+      "note_tw": "僅在打開自動對焦時可用",
+      "isCheck": true
+    },
+    {
+      "id": "自动打开网页",
+      "id_tw": "自動打開網頁",
+      "note": "",
+      "note_tw": "",
+      "isCheck": true
+    },
+    {
+      "id": "反色",
+      "id_tw": "反色",
+      "note": "扫描黑色背景上的白色条码",
+      "note_tw": "掃描黑色背景上的白色條碼",
+      "isCheck": false
+    }
+  ]
+}

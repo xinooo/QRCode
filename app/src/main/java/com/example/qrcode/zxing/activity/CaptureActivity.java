@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -108,11 +107,7 @@ public class CaptureActivity extends AppCompatActivity implements Callback ,OnCl
 		navigationView.setNavigationItemSelectedListener(this);
 
 		autoFocusCallback = new AutoFocusCallback();
-		String jsonData = SettingTools.readFile("setting.json",mCachePath);
-		if (TextUtils.isEmpty(jsonData)) {
-			jsonData = SettingTools.getAssetsData(this);
-		}
-		mData = SettingTools.parseJson(jsonData);
+		mData = SettingTools.getSettingData(this,mCachePath);
 	}
 
 	@SuppressWarnings("deprecation")

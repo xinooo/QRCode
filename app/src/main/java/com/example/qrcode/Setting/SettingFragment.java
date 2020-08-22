@@ -1,11 +1,9 @@
 package com.example.qrcode.Setting;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -59,12 +57,7 @@ public class SettingFragment extends Fragment {
         title.setText(getString(R.string.menu4));
         title.setTextColor(getActivity().getResources().getColor(R.color.white));
         toolbar.setBackgroundColor(getActivity().getResources().getColor(R.color.colorPrimary));
-
-        String jsonData = SettingTools.readFile("setting.json",mCachePath);
-        if (TextUtils.isEmpty(jsonData)) {
-            jsonData = SettingTools.getAssetsData(getContext());
-        }
-        mData = SettingTools.parseJson(jsonData);
+        mData = SettingTools.getSettingData(getContext(),mCachePath);
         mrecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new SettingAdapter(mData);
         mrecyclerView.setAdapter(adapter);
@@ -86,4 +79,5 @@ public class SettingFragment extends Fragment {
         });
         return mview;
     }
+
 }

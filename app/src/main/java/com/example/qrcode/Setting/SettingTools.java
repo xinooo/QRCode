@@ -36,6 +36,7 @@ public class SettingTools {
     public static boolean invert = false;       //反色
     public static boolean openWeb = false;      //開啟網頁
     public static boolean isAutoFocus = false;   //自動對焦
+    public static int settingRoot = 0;   //setting.json版本
     public static String getAssetsData(Context context) {
         InputStream mAssets = null;
         String result = "";
@@ -138,6 +139,30 @@ public class SettingTools {
         }
     }
 
+    public static List<SettingBean> getSettingData(Context context, String mCachePath){
+        String jsonData = null;
+        String sdData = null;
+        int root = 0,sdroot = 0;
+
+        try {
+            //本地
+            String sdresult = SettingTools.readFile("setting.json",mCachePath);
+            JSONObject sdObject = new JSONObject(sdresult);
+            sdroot = sdObject.optInt("root");
+            sdData = sdObject.optString("data");
+
+            //預設
+            String result = SettingTools.getAssetsData(context);
+            JSONObject rootObject = new JSONObject(result);
+            root = rootObject.optInt("root");
+            jsonData = rootObject.optString("data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        settingRoot = Math.max(sdroot, root);
+        return SettingTools.parseJson(sdroot >= root? sdData : jsonData);
+    }
+
     public static List<SettingBean> parseJson(String json) {
         List<SettingBean> dataList = new ArrayList<>();
         try {
@@ -162,23 +187,28 @@ public class SettingTools {
 
     public static void saveJsonData(List<SettingBean> mData, String mCachePath) {
         JSONArray jsonArray = new JSONArray();
-        JSONObject jsonObject;
+        JSONObject jsonObject1 = null;
         SettingBean settingBean;
-        for (int i = 0; i < mData.size(); i++) {
+
             try {
-                settingBean = mData.get(i);
-                jsonObject = new JSONObject();
-                jsonObject.put("id", settingBean.getid());
-                jsonObject.put("note", settingBean.getnote());
-                jsonObject.put("id_tw", settingBean.getid_tw());
-                jsonObject.put("note_tw", settingBean.getnote_tw());
-                jsonObject.put("isCheck", settingBean.getisCheck());
-                jsonArray.put(jsonObject);
+                for (int i = 0; i < mData.size(); i++) {
+                    settingBean = mData.get(i);
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("id", settingBean.getid());
+                    jsonObject.put("note", settingBean.getnote());
+                    jsonObject.put("id_tw", settingBean.getid_tw());
+                    jsonObject.put("note_tw", settingBean.getnote_tw());
+                    jsonObject.put("isCheck", settingBean.getisCheck());
+                    jsonObject1 = new JSONObject();
+                    jsonObject1.put("root",settingRoot);
+                    jsonArray.put(jsonObject);
+                    jsonObject1.put("data",jsonArray);
+
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-        writeFile("setting.json", jsonArray.toString(),mCachePath);
+        writeFile("setting.json", jsonObject1.toString(),mCachePath);
     }
 
     public static boolean isUrl(String value){
