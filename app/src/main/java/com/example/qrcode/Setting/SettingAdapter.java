@@ -49,22 +49,9 @@ public class SettingAdapter extends RecyclerView.Adapter<SettingAdapter.ViewHold
                 String s = holder.tv_id.getText().toString();
                 SettingTools.settingChange(s,isChecked);
                 data.setisCheck(isChecked);
-                if(position == 2){
-                    //若自動對焦關閉，則確定焦點也關閉且無法選擇
-                    operationListener.setCheck(position,isChecked);
-                }
                 SettingTools.saveJsonData(mData,CaptureActivity.mCachePath);
             }
         });
-        if(position == 2 && !data.getisCheck()){
-            no_auto_focus = true;
-        }
-        //若自動對焦關閉，則確定焦點也關閉且無法選擇
-        if(position == 3 && no_auto_focus){
-            holder.box.setEnabled(false);
-            holder.box.setChecked(false);
-            no_auto_focus = false;
-        }
     }
 
     public void setOnOperationListener(OnOperationListener listener) {
