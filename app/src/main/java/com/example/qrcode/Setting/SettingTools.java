@@ -8,9 +8,11 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
+import com.example.qrcode.BuildConfig;
 import com.example.qrcode.R;
 import com.example.qrcode.zxing.activity.CaptureActivity;
 import com.example.qrcode.zxing.camera.AutoFocusCallback;
@@ -141,26 +143,28 @@ public class SettingTools {
 
     public static List<SettingBean> getSettingData(Context context, String mCachePath){
         String jsonData = null;
-        String sdData = null;
-        int root = 0,sdroot = 0;
+        settingRoot = 0;
 
         try {
             //本地
             String sdresult = SettingTools.readFile("setting.json",mCachePath);
-            JSONObject sdObject = new JSONObject(sdresult);
-            sdroot = sdObject.optInt("root");
-            sdData = sdObject.optString("data");
+            if (!TextUtils.isEmpty(sdresult)) {
+                JSONObject sdObject = new JSONObject(sdresult);
+                settingRoot = sdObject.optInt("root");
+                jsonData = sdObject.optString("data");
+            }
+            if (settingRoot < BuildConfig.VERSION_CODE){
+                //預設
+                String result = SettingTools.getAssetsData(context);
+                JSONObject rootObject = new JSONObject(result);
+                settingRoot = rootObject.optInt("root");
+                jsonData = rootObject.optString("data");
+            }
 
-            //預設
-            String result = SettingTools.getAssetsData(context);
-            JSONObject rootObject = new JSONObject(result);
-            root = rootObject.optInt("root");
-            jsonData = rootObject.optString("data");
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        settingRoot = Math.max(sdroot, root);
-        return SettingTools.parseJson(sdroot >= root? sdData : jsonData);
+        return SettingTools.parseJson(jsonData);
     }
 
     public static List<SettingBean> parseJson(String json) {
