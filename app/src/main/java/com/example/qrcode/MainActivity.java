@@ -9,7 +9,9 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        openAppByUrl();
         button = (Button)findViewById(R.id.btn);
         ToastUtil.init(getApplicationContext());
         showPermission();
@@ -74,6 +77,46 @@ public class MainActivity extends AppCompatActivity {
                     final String text = data.getStringExtra("result");
                     SettingTools.todo(this,text,true);
                     break;
+            }
+        }
+    }
+
+    private void openAppByUrl(){
+        Intent intent = getIntent();
+        String scheme = intent.getScheme();
+        String dataString = intent.getDataString();
+        Log.e("openAppByUrl","scheme："+scheme+
+                        ", dataString："+dataString);
+        Uri uri = intent.getData();
+        if (uri != null) {
+            //完整的url信息
+            String url = uri.toString();
+            //scheme部分
+            String schemes = uri.getScheme();
+            //host部分
+            String host = uri.getHost();
+            //port部分
+            int port = uri.getPort();
+            //访问路径
+            String path = uri.getPath();
+            //编码路径
+            String path1 = uri.getEncodedPath();
+            //query部分
+            String queryString = uri.getQuery();
+            //获取参数值
+            String Info_system = uri.getQueryParameter("system");
+            String Info_id = uri.getQueryParameter("id");
+            Log.e("openAppByUrl","url："+url+
+                                ",\n schemes："+schemes+
+                                ",\n host："+host+
+                                ",\n port："+port+
+                                ",\n path："+path+
+                                ",\n path1："+path1+
+                                ",\n queryString："+queryString+
+                                ",\n Info_system："+Info_system+
+                                ",\n Info_id："+Info_id);
+            if (Info_id.equals("45464")){
+                startActivityForResult(new Intent(MainActivity.this, CaptureActivity.class), 1);
             }
         }
     }

@@ -32,6 +32,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!--使用URL Scheme喚起APP-->
+            <intent-filter>
+                <!--下面这几个必须要设置-->
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <!--
+                协议部分
+                <a href="http://qrcode:8080/app.QRCode?system=pc&id=45464">test</a>
+                -->
+                <data android:scheme="http" android:host="qrcode" android:port="8080" android:path="/app.QRCode" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.example.qrcode.zxing.activity.CaptureActivity"
