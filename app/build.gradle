@@ -38,4 +38,5 @@ dependencies {
 
     implementation 'com.jakewharton:butterknife:8.1.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.1.0'
+    implementation 'com.github.xinooo:ColorPickerDialog:1.0.0'
 }

@@ -26,7 +26,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.qrcode.AmbilWarna.AmbilWarnaDialog;
+import com.example.ColorPickerLibrary.ColorPickerDialog;
 import com.example.qrcode.Image.ClipImage.CropActivity;
 import com.example.qrcode.R;
 import com.google.gson.Gson;
@@ -296,18 +296,18 @@ public class GenerateQRcodeActivity extends AppCompatActivity implements View.On
     }
 
     private void showDialog(){
-        AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(GenerateQRcodeActivity.this, qrcode_color, true, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+        ColorPickerDialog colorPickerDialog = new ColorPickerDialog(GenerateQRcodeActivity.this, qrcode_color, true, new ColorPickerDialog.OnColorPickerListener() {
             @Override
-            public void onCancel(AmbilWarnaDialog dialog) {
+            public void onCancel(ColorPickerDialog colorPickerDialog) {
 
             }
 
             @Override
-            public void onOk(AmbilWarnaDialog dialog, String color) {
-                qrcode_color = Color.parseColor(color);
-                tv_color.setBackgroundColor(Color.parseColor(color));
+            public void onOk(ColorPickerDialog colorPickerDialog, String s) {
+                qrcode_color = Color.parseColor(s);
+                tv_color.setBackgroundColor(Color.parseColor(s));
             }
         });
-        ambilWarnaDialog.show();
+        colorPickerDialog.show();
     }
 }
