@@ -8,8 +8,8 @@ android {
         applicationId "com.example.qrcode"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 10
-        versionName "1.0"
+        versionCode 100
+        versionName "1.0.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -21,6 +21,16 @@ android {
         }
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "QRC_v${variant.versionName}_${buildType.name}_${releaseTime()}.apk"
+        }
+    }
+
+}
+
+static def releaseTime() {
+    return new Date().format("yyMMdd_HH-mm", TimeZone.getTimeZone("GMT+08:00"))
 }
 
 dependencies {
